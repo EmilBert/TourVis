@@ -1,7 +1,9 @@
 // The svg
-var svg = d3.select("svg"),
-  width = +svg.attr("width"),
-  height = +svg.attr("height");
+var svg = d3.select("svg");
+var width = +svg.attr("width");
+var height = width*0.6;
+
+
 
 // Map and projection
 var path = d3.geoPath();
@@ -19,7 +21,7 @@ var colorScale = d3.scaleThreshold()
 // Load external data and boot
 d3.queue()
   .defer(d3.json, "https://raw.githubusercontent.com/holtzy/D3-graph-gallery/master/DATA/world.geojson")
-  .defer(d3.csv, "https://raw.githubusercontent.com/holtzy/D3-graph-gallery/master/DATA/world_population.csv", function(d) { data.set(d.code, +d.pop); })
+  .defer(d3.csv, "https://raw.githubusercontent.com/holtzy/D3-graph-gallery/master/DATA/world_population.csv", function(d) { data.set(d.name, +d.pop); })
   .await(ready);
 
 function ready(error, topo) {
