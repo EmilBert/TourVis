@@ -19,7 +19,6 @@ var colorScale = d3.scaleThreshold()
   .range(d3.schemeBlues[9]);
 
 
-console.log(d3.schemeBlues[9])
 
 // Load external data and boot
 d3.queue()
@@ -27,6 +26,55 @@ d3.queue()
   .defer(d3.csv,  "/DataParse/arrivals.csv", function(d) { data.set(d.Country, d.y2019); })
   .await(ready);
 
+
+//Regions
+  var sets = [
+    {
+        name: 'Europe',
+        set: d3.set(['BEL', 'CHE', 'DEU', 'AUT', 'ESP', 'FRA', 'ATF', 
+        'GBR', 'GGY', 'JEY', 'FLK', 'SGS', 'GRC', 'MLT', 'IRL', 'ITA', 
+        'LUX', 'NLD', 'AND', 'POL', 'PRT', 'TUR', 'CYP', 'CYN', 'MON', 
+        'ALD', 'IMN', 'LTU', 'LVA', 'EST', 'BLR', 'UKR', 'MDA', 'ROU', 
+        'HUN', 'SVK', 'SVN', 'HRV', 'BIH', 'CZE', 'BGR', 'KOS', 'MKD', 
+        'ALB', 'MNE', 'SRB', 'DNK', 'FRO', 'FIN', 'GRL', 'ISL', 'NOR', 
+        'SWE']),
+    },
+
+    {
+        name: 'Americas',
+        set: d3.set(['CAN', 'MEX', 'USA', 'BLZ', 'CRI', 'CUB', 'GTM', 
+        'HND', 'NIC', 'PAN', 'SLV', 'HTI', 'JAM', 'DOM', 'PRI', 'BHS', 
+        'TCA', 'ATG', 'DMA', 'BRB', 'GRD', 'ARG', 'BOL', 'BRA', 'CHL', 
+        'COL', 'ECU', 'FLK', 'GUY', 'PRY', 'PER', 'SUR', 'URY', 'VEN', 
+        'TTO'])
+    },
+    {
+        name: 'Africa',
+        set: d3.set(['AGO', 'BDI', 'BEN', 'BFA', 'BWA', 'CAF', 'CIV', 
+        'CMR', 'COD', 'COD', 'COG', 'COM', 'CPV', 'DJI', 'DZA', 'EGY', 
+        'ERI', 'ETH', 'GAB', 'GHA', 'GIN', 'GMB', 'GNB', 'GNQ', 'KEN', 
+        'LBR', 'LBY', 'LSO', 'MAR', 'MDG', 'MLI', 'MOZ', 'MRT', 'MUS', 
+        'MWI', 'MYT', 'NAM', 'NER', 'NGA', 'REU', 'RWA', 'ESH', 'SDN', 
+        'SDS', 'SEN', 'SHN', 'SHN', 'SLE', 'SOM', 'SOL', 'SSD', 'STP', 
+        'STP', 'SWZ', 'SYC', 'TCD', 'TGO', 'TUN', 'TZA', 'TZA', 'UGA', 
+        'ZAF', 'ZMB', 'ZWE'])
+    },
+    {
+        name: 'Oceania',
+        set: d3.set(['AUS', 'NZL'])
+    },
+    {
+        name: 'Asia',
+        set: d3.set(['IND', 'BGD', 'LKA', 'AZE', 'ARE', 'QAT', 'IRN', 'AFG', 
+        'PAK', 'BHR', 'SAU', 'YEM', 'OMN', 'SYR', 'JOR', 'IRQ', 'KWT', 'ISR', 
+        'LBN', 'PSX', 'PSR', 'GEO', 'ARM', 'RUS', 'KAZ', 'UZB', 'TKM', 'KGZ', 
+        'TJK', 'BTN', 'CHN', 'JPN', 'IDN', 'MNG', 'NPL', 'MMR', 'THA', 'KHM', 
+        'LAO', 'VNM', 'PRK', 'KOR', 'TWN', 'MYS', 'PNG', 'SLB', 'VUT', 'NCL', 
+        'BRN', 'PHL', 'TLS', 'HKG', 'FJI', 'GUM', 'PLW', 'FSM', 'MNP', 'KAS'])
+    },
+];
+
+//Slider
 var dataTime = d3.range(0, 25).map(function(d) {
     return new Date(1995 + d, 10, 3);
   });
@@ -70,11 +118,6 @@ function ready(error, topo) {
       )
       // set the color of each country
       .attr("fill", function (d) {
-        console.log(d.properties.name.toUpperCase());
-        console.log(data.get(d.properties.name.toUpperCase()));
-        
-        if(d.properties.name.toUpperCase() == "UNITED STATES OF AMERICA") console.log("babab")
-
         d.total = data.get(d.properties.name.toUpperCase()) || 0;
         return colorScale(d.total);
       })
@@ -82,6 +125,12 @@ function ready(error, topo) {
         d3.select(this).transition()
              .duration('50')
              .attr('opacity', '0.8');
+        //Merge regions
+             for (var i = 0; i < sets.length; i++) {
+              if (sets[i].set.has(d.id)){
+                console.log(sets[i].name)
+              }
+          }
       })
       .on('mouseout', function (d, i) {
         d3.select(this).transition()
