@@ -16,13 +16,16 @@ var projection = d3.geoMercator()
 var data = d3.map();
 var colorScale = d3.scaleThreshold()
   .domain([])
-  .range(d3.schemeBlues[5]);
+  .range(d3.schemeBlues[9]);
+
+console.log(d3.schemeBlues[9])
 
 // Load external data and boot
 d3.queue()
   .defer(d3.json, "https://raw.githubusercontent.com/holtzy/D3-graph-gallery/master/DATA/world.geojson")
-  .defer(d3.csv, "https://raw.githubusercontent.com/holtzy/D3-graph-gallery/master/DATA/world_population.csv", function(d) { data.set(d.name, +d.pop); })
+  .defer(d3.csv, "/DataParse/arrivals.csv", function(d) { data.set(d.Country, +d.y2019); })
   .await(ready);
+
 
 function ready(error, topo) {
 
@@ -38,8 +41,8 @@ function ready(error, topo) {
       )
       // set the color of each country
       .attr("fill", function (d) {
-        d.total = data.get(d.id) || 0;
-        return colorScale(d.total);
+        console.log(d.y2019)
+        return "white";
       })
       .on('mouseover', function (d, i) {
         d3.select(this).transition()
