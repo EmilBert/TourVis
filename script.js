@@ -3,7 +3,14 @@ var svg = d3.select("svg");
 var width = +svg.attr("width");
 var height = width*0.6;
 
+//Append a defs (for definition) element to your SVG
+var defs = svg.append("defs");
 
+//Append a linearGradient element to the defs and give it a unique id
+var linearGradient = defs.append("linearGradient")
+    .attr("id", "linear-gradient");
+
+    console.log(linearGradient);
 
 // Map and projection
 var path = d3.geoPath();
@@ -17,12 +24,6 @@ var data = d3.map();
 var colorScale = d3.scaleThreshold()
   .domain([10, 100, 1000, 1500, 2000, 3000, 4000, 5000, 6000, 7000])
   .range(d3.schemeGreens[9]);
-
-
-  
-  
-  console.log(d3.schemeBlues[9]);
-  console.log(d3.max(data));
   
 // Load external data and boot
 d3.queue()
@@ -108,6 +109,9 @@ var dataTime = d3.range(0, 25).map(function(d) {
 
   d3.select('p#value-time').text(d3.timeFormat('%Y')(sliderTime.value()));
 
+  
+  
+
 function ready(error, topo) {
 
   // Draw the map
@@ -120,11 +124,17 @@ function ready(error, topo) {
       .attr("d", d3.geoPath()
         .projection(projection)
       )
+      .attr("id", function(d){
+        return d.id;
+      })
       // set the color of each country
       .attr("fill", function (d) {
         if(data.get(d.properties.name.toUpperCase()) || 0){
           d.total = data.get(d.properties.name.toUpperCase()) || 0;
-          return colorScale(d.total);
+          console.log(d.total)
+          var color = d.total/162538;
+          var colorString= "rgb(0,"+255*color+",0)";
+          return colorString;
         }else{
           console.log(d.properties.name.toUpperCase());
           return "white";
@@ -148,3 +158,5 @@ function ready(error, topo) {
              .attr('opacity', '1');
       });
 }
+
+
