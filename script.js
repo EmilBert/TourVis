@@ -15,19 +15,18 @@ var projection = d3.geoMercator()
 // Data and color scale
 var data = d3.map();
 var colorScale = d3.scaleThreshold()
-  .domain([])
+  .domain([10, 100, 1000, 1500, 2000, 3000, 4000, 5000, 6000])
   .range(d3.schemeBlues[9]);
+
 
 console.log(d3.schemeBlues[9])
 
 // Load external data and boot
 d3.queue()
-  .defer(d3.json, "https://raw.githubusercontent.com/holtzy/D3-graph-gallery/master/DATA/world.geojson")
-  .defer(d3.csv, "/DataParse/arrivals.csv", function(d) { data.set(d.Country, +d.y2019); })
+  .defer(d3.json, "https://raw.githubusercontent.com/johan/world.geo.json/master/countries.geo.json")
+  .defer(d3.csv,  "/DataParse/arrivals.csv", function(d) { data.set(d.Country, d.y2019); })
   .await(ready);
 
-
- 
 var dataTime = d3.range(0, 25).map(function(d) {
     return new Date(1995 + d, 10, 3);
   });
@@ -71,8 +70,13 @@ function ready(error, topo) {
       )
       // set the color of each country
       .attr("fill", function (d) {
-        console.log(d.y2019)
-        return "white";
+        console.log(d.properties.name.toUpperCase());
+        console.log(data.get(d.properties.name.toUpperCase()));
+        
+        if(d.properties.name.toUpperCase() == "UNITED STATES OF AMERICA") console.log("babab")
+
+        d.total = data.get(d.properties.name.toUpperCase()) || 0;
+        return colorScale(d.total);
       })
       .on('mouseover', function (d, i) {
         d3.select(this).transition()
