@@ -15,12 +15,14 @@ var projection = d3.geoMercator()
 // Data and color scale
 var data = d3.map();
 var colorScale = d3.scaleThreshold()
-  .domain([10, 100, 1000, 1500, 2000, 3000, 4000, 5000, 6000])
-  .range(d3.schemeBlues[9]);
+  .domain([10, 100, 1000, 1500, 2000, 3000, 4000, 5000, 6000, 7000])
+  .range(d3.schemeGreens[9]);
 
-
-console.log(d3.schemeBlues[9])
-
+  
+  
+  console.log(d3.schemeBlues[9]);
+  console.log(d3.max(data));
+  
 // Load external data and boot
 d3.queue()
   .defer(d3.json, "https://raw.githubusercontent.com/johan/world.geo.json/master/countries.geo.json")
@@ -70,12 +72,13 @@ function ready(error, topo) {
       )
       // set the color of each country
       .attr("fill", function (d) {
-        console.log(d.properties.name.toUpperCase());
-        console.log(data.get(d.properties.name.toUpperCase()));
-        
-        if(d.properties.name.toUpperCase() == "UNITED STATES OF AMERICA") console.log("babab")
 
-        d.total = data.get(d.properties.name.toUpperCase()) || 0;
+        if(data.get(d.properties.name.toUpperCase()) || 0){
+          d.total = data.get(d.properties.name.toUpperCase()) || 0;
+        }else{
+          console.log(d.properties.name.toUpperCase());
+          return "white";
+        }
         return colorScale(d.total);
       })
       .on('mouseover', function (d, i) {
