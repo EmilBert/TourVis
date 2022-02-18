@@ -12,3 +12,7 @@ body {
 svg {
     margin:auto;
 }
+
+.selected{
+  fill:red;
+}

@@ -28,7 +28,7 @@ var colorScale = d3.scaleThreshold()
 // Load external data and boot
 d3.queue()
   .defer(d3.json, "https://raw.githubusercontent.com/johan/world.geo.json/master/countries.geo.json")
-  .defer(d3.csv,  "/DataParse/arrivals.csv", function(d) { data.set(d.Country, d.y2019); })
+  .defer(d3.csv,  "/DataParse/arrivals.csv", function(d) { data.set(d.Country, [d.y1995,d.y1996,d.y1997,d.y1998,d.y1999,d.y2000,d.y2001,d.y2002,d.y2003,d.y2004,d.y2005,d.y2006,d.y2007,d.y2008,d.y2009,d.y2010,d.y2011,d.y2012,d.y2013,d.y2014,d.y2015,d.y2016,d.y2017,d.y2018,d.y2019]); })
   .await(ready);
 
 
@@ -109,8 +109,7 @@ var dataTime = d3.range(0, 25).map(function(d) {
 
   d3.select('p#value-time').text(d3.timeFormat('%Y')(sliderTime.value()));
 
-  
-  
+  colorCountry("RUS");
 
 function ready(error, topo) {
 
@@ -129,10 +128,12 @@ function ready(error, topo) {
       })
       // set the color of each country
       .attr("fill", function (d) {
+        console.log(data.get(d.properties.name.toUpperCase()))
+
         if(data.get(d.properties.name.toUpperCase()) || 0){
-          d.total = data.get(d.properties.name.toUpperCase()) || 0;
+          d.total = data.get(d.properties.name.toUpperCase())[16];
           console.log(d.total)
-          var color = d.total/162538;
+          var color = d.total/10000;
           var colorString= "rgb(0,"+255*color+",0)";
           return colorString;
         }else{
@@ -157,6 +158,12 @@ function ready(error, topo) {
              .duration('50')
              .attr('opacity', '1');
       });
+}
+
+function colorCountry(d) {
+  // Color selected country/region
+ d3.select("g#"+d).selectAll("path").style("fill","red");
+ 
 }
 
 
