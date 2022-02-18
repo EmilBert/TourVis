@@ -6,31 +6,54 @@ var height = width*0.6;
 //Append a defs (for definition) element to your SVG
 var defs = svg.append("defs");
 
-//Append a linearGradient element to the defs and give it a unique id
-var linearGradient = defs.append("linearGradient")
-    .attr("id", "linear-gradient");
-
-    console.log(linearGradient);
-
 // Map and projection
 var path = d3.geoPath();
 var projection = d3.geoMercator()
-  .scale(70)
-  .center([0,20])
-  .translate([width / 2, height / 2]);
+.scale(70)
+.center([0,20])
+.translate([width / 2, height / 2]);
 
-// Data and color scale
+// Data
 var data = d3.map();
-var colorScale = d3.scaleThreshold()
-  .domain([10, 100, 1000, 1500, 2000, 3000, 4000, 5000, 6000, 7000])
-  .range(d3.schemeGreens[9]);
-  
+var countryMax = 0;
+
 // Load external data and boot
 d3.queue()
-  .defer(d3.json, "https://raw.githubusercontent.com/johan/world.geo.json/master/countries.geo.json")
-  .defer(d3.csv,  "/DataParse/arrivals.csv", function(d) { data.set(d.Country, [d.y1995,d.y1996,d.y1997,d.y1998,d.y1999,d.y2000,d.y2001,d.y2002,d.y2003,d.y2004,d.y2005,d.y2006,d.y2007,d.y2008,d.y2009,d.y2010,d.y2011,d.y2012,d.y2013,d.y2014,d.y2015,d.y2016,d.y2017,d.y2018,d.y2019]); })
-  .await(ready);
+.defer(d3.json, "https://raw.githubusercontent.com/johan/world.geo.json/master/countries.geo.json")
+.defer(d3.csv,  "/DataParse/arrivals.csv", 
+function(d) {data.set(d.Country, [d.y1995,d.y1996,d.y1997,d.y1998,d.y1999,d.y2000,d.y2001,d.y2002,d.y2003,d.y2004,d.y2005,d.y2006,d.y2007,d.y2008,d.y2009,d.y2010,d.y2011,d.y2012,d.y2013,d.y2014,d.y2015,d.y2016,d.y2017,d.y2018,d.y2019]);})
+.await(ready);
 
+/** GRADIENT BUSINESS */
+
+console.log(countryMax);
+
+var somData = [0,10,100,1000,10000,100000, 2000000]
+var colours = ["#2c7bb6", "#00a6ca","#00ccbc"];
+var colourRange = d3.range(0, 1, 1.0 / (colours.length - 1));
+colourRange.push(1);
+		   
+//Create color gradient
+var colorScale = d3.scale.linear()
+	.domain(colourRange)
+	.range(colours)
+	.interpolate(d3.interpolateHcl);
+
+//Needed to map the values of the dataset to the color scale
+var colorInterpolate = d3.scale.linear()
+	.domain(d3.extent(somData))
+	.range([0,1]);
+
+//Calculate the gradient	
+defs.append("linearGradient")
+	.attr("id", "gradient-rainbow-colors")
+	.attr("x1", "0%").attr("y1", "0%")
+	.attr("x2", "100%").attr("y2", "0%")
+	.selectAll("stop") 
+	.data(colours)                  
+	.enter().append("stop") 
+	.attr("offset", function(d,i) { return i/(colours.length-1); })   
+	.attr("stop-color", function(d) { return d; });
 
 //Regions
   var sets = [
@@ -109,7 +132,6 @@ var dataTime = d3.range(0, 25).map(function(d) {
 
   d3.select('p#value-time').text(d3.timeFormat('%Y')(sliderTime.value()));
 
-  colorCountry("RUS");
 
 function ready(error, topo) {
 
@@ -131,15 +153,15 @@ function ready(error, topo) {
         if(data.get(d.properties.name.toUpperCase()) || 0){
          
           d.total = data.get(d.properties.name.toUpperCase())[24];
-          var color = d.total/10000;
-          var colorString= "rgb(0,"+255*color+",0)";
+          var color = d.total*10;
+          return colorScale(colorInterpolate(color)); 
           
-          return colorString;
         }else{
           // Country is missing from data
           console.log(d.properties.name.toUpperCase());
           return "white";
         }
+        
         
       })
       .on('mouseover', function (d, i) {
@@ -159,17 +181,8 @@ function ready(error, topo) {
              .attr('opacity', '1');
       }).on('click', selected);
 }
-function colorCountry(d) {
-  // Color selected country/region
- d3.select("g#"+d).selectAll("path").style("fill","red");
- 
-}
-
 
 function selected() {
   d3.select('.selected').classed('selected', false);
   d3.select(this).classed('selected', true);
-
-  d3.select('.selected-region').classed('selected-region', false)
-  d3.select('.selected-region').classed('selected-region', false)
 }
