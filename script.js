@@ -3,6 +3,8 @@ var svg = d3.select("svg");
 var width = +svg.attr("width");
 var height = width*0.6;
 
+var currYear = 9;
+
 //Append a defs (for definition) element to your SVG
 var defs = svg.append("defs");
 
@@ -26,12 +28,13 @@ var colorScale = d3.scaleThreshold()
   .range(d3.schemeGreens[9]);
   
 // Load external data and boot
+function update(){
 d3.queue()
   .defer(d3.json, "https://raw.githubusercontent.com/johan/world.geo.json/master/countries.geo.json")
   .defer(d3.csv,  "/DataParse/arrivals.csv", function(d) { data.set(d.Country, [d.y1995,d.y1996,d.y1997,d.y1998,d.y1999,d.y2000,d.y2001,d.y2002,d.y2003,d.y2004,d.y2005,d.y2006,d.y2007,d.y2008,d.y2009,d.y2010,d.y2011,d.y2012,d.y2013,d.y2014,d.y2015,d.y2016,d.y2017,d.y2018,d.y2019]); })
   .await(ready);
-
-
+}
+update();
 //Regions
   var sets = [
     {
@@ -84,17 +87,20 @@ var dataTime = d3.range(0, 25).map(function(d) {
     return new Date(1995 + d, 10, 3);
   });
 
+  var step = 1000 * 60 * 60 * 24 * 365;
   var sliderTime = 
   d3.sliderBottom()
     .min(d3.min(dataTime))
     .max(d3.max(dataTime))
-    .step(1000 * 60 * 60 * 24 * 365)
+    .step(step)
     .width(width)
     .tickFormat(d3.timeFormat('%Y'))
     .tickValues(dataTime)
     .default(new Date(2004, 10, 3))
     .on('onchange', val => {
       d3.select('p#value-time').text(d3.timeFormat('%Y')(val));
+      currYear=(Math.floor(val/step))-25;
+      update(currYear);
     });
 
   var gTime = d3
@@ -130,7 +136,7 @@ function ready(error, topo) {
       .attr("fill", function (d) {
         if(data.get(d.properties.name.toUpperCase()) || 0){
          
-          d.total = data.get(d.properties.name.toUpperCase())[24];
+          d.total = data.get(d.properties.name.toUpperCase())[currYear];
           var color = d.total/10000;
           var colorString= "rgb(0,"+255*color+",0)";
           
