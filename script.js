@@ -160,8 +160,8 @@ function ready(error, topo) {
       .attr("fill", function (d) {
         if(data.get(d.properties.name.toUpperCase()) || 0){
          
-          d.total = data.get(d.properties.name.toUpperCase())[24];
-          var color = d.total*10;
+          d.total = data.get(d.properties.name.toUpperCase())[currYear];
+          var color = d.total;
           return colorScale(colorInterpolate(color)); 
 
         }else{
@@ -169,19 +169,17 @@ function ready(error, topo) {
           console.log(d.properties.name.toUpperCase());
           return "white";
         }
-        
-        
       })
       .on('mouseover', function (d, i) {
         d3.select(this).transition()
              .duration('50')
              .attr('opacity', '0.8');
         //Merge regions
-             for (var i = 0; i < sets.length; i++) {
-              if (sets[i].set.has(d.id)){
-                console.log(sets[i].name)
+              for (var i = 0; i < sets.length; i++) {
+                if (sets[i].set.has(d.id)){
+                  console.log(sets[i].name);
+                }
               }
-          }
       })
       .on('mouseout', function (d, i) {
         d3.select(this).transition()
