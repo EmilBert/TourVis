@@ -128,15 +128,15 @@ function ready(error, topo) {
       })
       // set the color of each country
       .attr("fill", function (d) {
-        console.log(data.get(d.properties.name.toUpperCase()))
-
         if(data.get(d.properties.name.toUpperCase()) || 0){
-          d.total = data.get(d.properties.name.toUpperCase())[16];
-          console.log(d.total)
+         
+          d.total = data.get(d.properties.name.toUpperCase())[24];
           var color = d.total/10000;
           var colorString= "rgb(0,"+255*color+",0)";
+          
           return colorString;
         }else{
+          // Country is missing from data
           console.log(d.properties.name.toUpperCase());
           return "white";
         }
@@ -157,9 +157,8 @@ function ready(error, topo) {
         d3.select(this).transition()
              .duration('50')
              .attr('opacity', '1');
-      });
+      }).on('click', selected);
 }
-
 function colorCountry(d) {
   // Color selected country/region
  d3.select("g#"+d).selectAll("path").style("fill","red");
@@ -167,3 +166,10 @@ function colorCountry(d) {
 }
 
 
+function selected() {
+  d3.select('.selected').classed('selected', false);
+  d3.select(this).classed('selected', true);
+
+  d3.select('.selected-region').classed('selected-region', false)
+  d3.select('.selected-region').classed('selected-region', false)
+}
