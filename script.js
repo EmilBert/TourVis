@@ -170,13 +170,10 @@ function ready(error, topo) {
     .data(topo.features)
     .enter()
     .append("path")
-      // draw each country
-      .attr("d", d3.geoPath()
-        .projection(projection)
-      )
-      .attr("id", function(d){
-        return d.name;
-      })
+    // draw each country
+    .attr("d", d3.geoPath()
+    .projection(projection))
+    .attr("id", function(d){return d.properties.name.toUpperCase();})
       // set the color of each country
       .attr("fill", function (d) {
         if(data.get(d.properties.name.toUpperCase())){

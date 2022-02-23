@@ -5,7 +5,7 @@ body {
 }
 
 .inputs{
-    display: flex;
+    display: block;
 }
 
 .wrapper{
