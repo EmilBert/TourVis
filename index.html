@@ -6,28 +6,37 @@
     <meta http-equiv="X-UA-Compatible" content="ie=edge">
     <link rel="stylesheet" href="style.css">
     <title>TourVis</title>
-    
     <!-- Load d3.js -->
     <script src="https://cdnjs.cloudflare.com/ajax/libs/d3/3.5.6/d3.min.js" charset="utf-8"></script>
     <script src="https://d3js.org/d3.v4.js"></script>
     <script src="https://d3js.org/d3-scale-chromatic.v1.min.js"></script>
     <script src="https://d3js.org/d3-geo-projection.v2.min.js"></script>
     <script src="https://unpkg.com/d3-simple-slider"></script>
-
-
-
   </head>
   <body>
-    <div class="interface">
-      <svg id="map" width="700" height="400"></svg>
+    <div class="wrapper">
+      <div class="inputs">
+        <input type="radio" name="region" value="Total" checked><label>Total</label>
+        <input type="radio" name="region" value="Africa"><label>Africa</label>
+        <input type="radio" name="region" value="Americas"><label>Americas</label>
+        <input type="radio" name="region" value="East Asia and the Pacific"><label>East Asia and the Pacific</label>
+        <input type="radio" name="region" value="Europe"><label>Europe</label>
+        <input type="radio" name="region" value="Middle East"><label>Middle East</label>
+        <input type="radio" name="region" value="South Asia"><label>South Asia</label>
+        <input type="radio" name="region" value="Other not classified"><label>Other not classified</label>
+      </div>
+
+      <div class="interface">
+        <svg id="map" width="700" height="400"></svg>
+      </div>
+
+      <div class="slider">
+          
+          <div id="slider-time"><div class="slider-text">
+            <h2>Year</h2><p id="value-time"></p>
+          </div></div>
+      </div>
     </div>
-
-<h2>Time</h2>
-  <div class="row align-items-center">
-    <div class="col-sm-2"><p id="value-time"></p></div>
-    <div class="col-sm"><div id="slider-time"></div></div>
-  </div>
-
-    <script src="script.js"></script>
   </body>
+  <script src="script.js"></script>
 </html>

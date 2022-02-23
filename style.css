@@ -1,6 +1,35 @@
 body {
     background: #DADADA;
     font-family: sans-serif;
+    width:100%;
+}
+
+.inputs{
+    display: flex;
+}
+
+.wrapper{
+    width:1000px;
+    margin:auto;
+}
+
+.slider{
+    position: relative;
+    width:100%;
+}
+
+.slider .slider-text{
+    display:flex;
+}
+
+.slider h2, .slider p{
+    margin:1rem 0 -1rem 1rem;
+    font-size: 1rem;
+}
+
+.slider #slider-time{
+    width: fit-content;
+    margin:auto;
 }
 
 .interface{
@@ -9,9 +38,6 @@ body {
     justify-content:center;
 }
 
-svg {
-    margin:auto;
-}
 
 .selected{
   fill:red;

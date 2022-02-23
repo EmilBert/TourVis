@@ -5,6 +5,8 @@ var height = width*0.6;
 
 var currYear = 9;
 
+var selectedRegion = "Total";
+
 //Append a defs (for definition) element to your SVG
 var defs = svg.append("defs");
 
@@ -19,21 +21,35 @@ var projection = d3.geoMercator()
 var data = d3.map();
 var countryMax = 0;
 
-var queue = d3.queue().defer(d3.json, "https://raw.githubusercontent.com/johan/world.geo.json/master/countries.geo.json");
-
-// Load external data and boot
 function update(){
-  queue 
-  .defer(d3.csv,  "/DataParse/arrivals.csv", function(d) { data.set(d.Country, [d.y1995,d.y1996,d.y1997,d.y1998,d.y1999,d.y2000,d.y2001,d.y2002,d.y2003,d.y2004,d.y2005,d.y2006,d.y2007,d.y2008,d.y2009,d.y2010,d.y2011,d.y2012,d.y2013,d.y2014,d.y2015,d.y2016,d.y2017,d.y2018,d.y2019]); })
-  .await(ready);
+  if(selectedRegion == "Total"){
+    d3.queue().defer(d3.json, "https://raw.githubusercontent.com/johan/world.geo.json/master/countries.geo.json")
+    .defer(d3.csv,  "/DataParse/arrivals.csv", function(d) { data.set(d.Country, [d.y1995,d.y1996,d.y1997,d.y1998,d.y1999,d.y2000,d.y2001,d.y2002,d.y2003,d.y2004,d.y2005,d.y2006,d.y2007,d.y2008,d.y2009,d.y2010,d.y2011,d.y2012,d.y2013,d.y2014,d.y2015,d.y2016,d.y2017,d.y2018,d.y2019]); })
+    .await(ready);
+  }
+  else{
+    d3.queue().defer(d3.json, "https://raw.githubusercontent.com/johan/world.geo.json/master/countries.geo.json")
+    .defer(d3.csv,  "/DataParse/Regions.csv", function(d) {
+       
+      if(selectedRegion == d.RegionOfOrigin)
+      data.set(d.Country,[d.y1995,d.y1996,d.y1997,d.y1998,d.y1999,d.y2000,d.y2001,d.y2002,d.y2003,d.y2004,d.y2005,d.y2006,d.y2007,d.y2008,d.y2009,d.y2010,d.y2011,d.y2012,d.y2013,d.y2014,d.y2015,d.y2016,d.y2017,d.y2018,d.y2019]);
+      })
+    .await(ready);
+  }
 }
+
 update();
 
-/** GRADIENT BUSINESS */
+const buttons = d3.selectAll('input');
+buttons.on('change', function(d) {
+  selectedRegion = this.value;
+  update();
+});
 
+/** GRADIENT BUSINESS */
 console.log(countryMax);
 
-var somData = [0,10,100,1000,10000,100000, 2000000]
+var somData = [0,10,50,100,500,1000,5000,10000,50000,100000,500000]
 var colours = ["#2c7bb6", "#00a6ca","#00ccbc"];
 var colourRange = d3.range(0, 1, 1.0 / (colours.length - 1));
 colourRange.push(1);
@@ -131,7 +147,7 @@ var dataTime = d3.range(0, 25).map(function(d) {
   var gTime = d3
     .select('div#slider-time')
     .append('svg')
-    .attr('width', 900)
+    .attr('width', 750)
     .attr('height', 100)
     .append('g')
     .attr('transform', 'translate(30,30)');
@@ -144,6 +160,8 @@ var dataTime = d3.range(0, 25).map(function(d) {
 function ready(error, topo) {
 
   // Draw the map
+  svg.selectAll("g").remove();
+
   svg.append("g")
     .selectAll("path")
     .data(topo.features)
@@ -154,16 +172,15 @@ function ready(error, topo) {
         .projection(projection)
       )
       .attr("id", function(d){
-        return d.id;
+        return d.name;
       })
       // set the color of each country
       .attr("fill", function (d) {
         if(data.get(d.properties.name.toUpperCase()) || 0){
-         
+          
           d.total = data.get(d.properties.name.toUpperCase())[currYear];
           var color = d.total;
           return colorScale(colorInterpolate(color)); 
-
         }else{
           // Country is missing from data
           console.log(d.properties.name.toUpperCase());
