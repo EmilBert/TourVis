@@ -79,53 +79,6 @@ defs.append("linearGradient")
 	.attr("offset", function(d,i) { return i/(colours.length-1); })   
 	.attr("stop-color", function(d) { return d; });
 
-//Regions
-  var sets = [
-    {
-        name: 'Europe',
-        set: d3.set(['BEL', 'CHE', 'DEU', 'AUT', 'ESP', 'FRA', 'ATF', 
-        'GBR', 'GGY', 'JEY', 'FLK', 'SGS', 'GRC', 'MLT', 'IRL', 'ITA', 
-        'LUX', 'NLD', 'AND', 'POL', 'PRT', 'TUR', 'CYP', 'CYN', 'MON', 
-        'ALD', 'IMN', 'LTU', 'LVA', 'EST', 'BLR', 'UKR', 'MDA', 'ROU', 
-        'HUN', 'SVK', 'SVN', 'HRV', 'BIH', 'CZE', 'BGR', 'KOS', 'MKD', 
-        'ALB', 'MNE', 'SRB', 'DNK', 'FRO', 'FIN', 'GRL', 'ISL', 'NOR', 
-        'SWE']),
-    },
-
-    {
-        name: 'Americas',
-        set: d3.set(['CAN', 'MEX', 'USA', 'BLZ', 'CRI', 'CUB', 'GTM', 
-        'HND', 'NIC', 'PAN', 'SLV', 'HTI', 'JAM', 'DOM', 'PRI', 'BHS', 
-        'TCA', 'ATG', 'DMA', 'BRB', 'GRD', 'ARG', 'BOL', 'BRA', 'CHL', 
-        'COL', 'ECU', 'FLK', 'GUY', 'PRY', 'PER', 'SUR', 'URY', 'VEN', 
-        'TTO'])
-    },
-    {
-        name: 'Africa',
-        set: d3.set(['AGO', 'BDI', 'BEN', 'BFA', 'BWA', 'CAF', 'CIV', 
-        'CMR', 'COD', 'COD', 'COG', 'COM', 'CPV', 'DJI', 'DZA', 'EGY', 
-        'ERI', 'ETH', 'GAB', 'GHA', 'GIN', 'GMB', 'GNB', 'GNQ', 'KEN', 
-        'LBR', 'LBY', 'LSO', 'MAR', 'MDG', 'MLI', 'MOZ', 'MRT', 'MUS', 
-        'MWI', 'MYT', 'NAM', 'NER', 'NGA', 'REU', 'RWA', 'ESH', 'SDN', 
-        'SDS', 'SEN', 'SHN', 'SHN', 'SLE', 'SOM', 'SOL', 'SSD', 'STP', 
-        'STP', 'SWZ', 'SYC', 'TCD', 'TGO', 'TUN', 'TZA', 'TZA', 'UGA', 
-        'ZAF', 'ZMB', 'ZWE'])
-    },
-    {
-        name: 'Oceania',
-        set: d3.set(['AUS', 'NZL'])
-    },
-    {
-        name: 'Asia',
-        set: d3.set(['IND', 'BGD', 'LKA', 'AZE', 'ARE', 'QAT', 'IRN', 'AFG', 
-        'PAK', 'BHR', 'SAU', 'YEM', 'OMN', 'SYR', 'JOR', 'IRQ', 'KWT', 'ISR', 
-        'LBN', 'PSX', 'PSR', 'GEO', 'ARM', 'RUS', 'KAZ', 'UZB', 'TKM', 'KGZ', 
-        'TJK', 'BTN', 'CHN', 'JPN', 'IDN', 'MNG', 'NPL', 'MMR', 'THA', 'KHM', 
-        'LAO', 'VNM', 'PRK', 'KOR', 'TWN', 'MYS', 'PNG', 'SLB', 'VUT', 'NCL', 
-        'BRN', 'PHL', 'TLS', 'HKG', 'FJI', 'GUM', 'PLW', 'FSM', 'MNP', 'KAS'])
-    },
-];
-
 //Slider
 var dataTime = d3.range(0, 25).map(function(d) {
     return new Date(1995 + d, 10, 3);
@@ -213,3 +166,53 @@ function selected() {
   d3.select(this).classed('selected', true);
 }
 
+//Barchart
+// set the dimensions and margins of the graph
+var margin_bar = {top: 30, right: 30, bottom: 70, left: 60},
+width_bar = 460 - margin.left - margin.right,
+height_bar = 400 - margin.top - margin.bottom;
+          
+// append the svg object to the body of the page
+var svgA = d3.select("#d3-container")
+  .append("svg")
+  .attr("width", width_bar + margin_bar.left + margin_bar.right)
+  .attr("height", height_bar + margin_bar.top + margin_bar.bottom)
+  .append("g")
+  .attr("transform", "translate(" + margin_bar.left + "," + margin_bar.top + ")");
+
+function bar(){
+  // Parse the Data
+  d3.csv("/DataParse/Regions.csv", function(data1) {
+
+    // X axis
+    var x = d3.scaleBand()
+      .range([ 0, width_bar ])
+      .domain(data1.map(function(d) { return d.RegionOfOrigin; }))
+      .padding(0.2);
+    svgA.append("g")
+      .attr("transform", "translate(0," + height_bar + ")")
+      .call(d3.axisBottom(x))
+      .selectAll("text")
+        .attr("transform", "translate(-10,0)rotate(-45)")
+        .style("text-anchor", "end");
+    
+    // Add Y axis
+    var y = d3.scaleLinear()
+      .domain([0, 13000])
+      .range([ height_bar, 0]);
+    svgA.append("g")
+      .call(d3.axisLeft(y));
+    
+    // Bars
+    svgA.selectAll("mybar")
+      .data(data)
+      .enter()
+      .append("rect")
+        .attr("x", function(d) { return x(d.RegionOfOrigin); }) 
+        .attr("y", function(d) { return y(); })         //Värdet på y-axeln
+        .attr("width", x.bandwidth())
+        .attr("height", function(d) { return height_bar - y(d.Value); })
+        .attr("fill", "#69b3a2")
+    
+    })
+}
