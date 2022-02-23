@@ -19,13 +19,13 @@ var projection = d3.geoMercator()
 var data = d3.map();
 var countryMax = 0;
 
+var queue = d3.queue().defer(d3.json, "https://raw.githubusercontent.com/johan/world.geo.json/master/countries.geo.json");
+
 // Load external data and boot
 function update(){
-d3.queue()
-
-.defer(d3.json, "https://raw.githubusercontent.com/johan/world.geo.json/master/countries.geo.json")
-.defer(d3.csv,  "/DataParse/arrivals.csv", function(d) { data.set(d.Country, [d.y1995,d.y1996,d.y1997,d.y1998,d.y1999,d.y2000,d.y2001,d.y2002,d.y2003,d.y2004,d.y2005,d.y2006,d.y2007,d.y2008,d.y2009,d.y2010,d.y2011,d.y2012,d.y2013,d.y2014,d.y2015,d.y2016,d.y2017,d.y2018,d.y2019]); })
-.await(ready);
+  queue 
+  .defer(d3.csv,  "/DataParse/arrivals.csv", function(d) { data.set(d.Country, [d.y1995,d.y1996,d.y1997,d.y1998,d.y1999,d.y2000,d.y2001,d.y2002,d.y2003,d.y2004,d.y2005,d.y2006,d.y2007,d.y2008,d.y2009,d.y2010,d.y2011,d.y2012,d.y2013,d.y2014,d.y2015,d.y2016,d.y2017,d.y2018,d.y2019]); })
+  .await(ready);
 }
 update();
 
