@@ -24,22 +24,24 @@ var countryMax = 0;
 function update(){
   if(selectedRegion == "Total"){
     d3.queue().defer(d3.json, "https://raw.githubusercontent.com/johan/world.geo.json/master/countries.geo.json")
-    .defer(d3.csv,  "/DataParse/arrivals.csv", function(d) { data.set(d.Country, [d.y1995,d.y1996,d.y1997,d.y1998,d.y1999,d.y2000,d.y2001,d.y2002,d.y2003,d.y2004,d.y2005,d.y2006,d.y2007,d.y2008,d.y2009,d.y2010,d.y2011,d.y2012,d.y2013,d.y2014,d.y2015,d.y2016,d.y2017,d.y2018,d.y2019]); })
+    .defer(d3.csv,  "/DataParse/arrivals.csv", function(d) { 
+      data.set(d.Country, [d.y1995,d.y1996,d.y1997,d.y1998,d.y1999,d.y2000,d.y2001,d.y2002,d.y2003,d.y2004,d.y2005,d.y2006,d.y2007,d.y2008,d.y2009,d.y2010,d.y2011,d.y2012,d.y2013,d.y2014,d.y2015,d.y2016,d.y2017,d.y2018,d.y2019]); })
     .await(ready);
   }
   else{
     d3.queue().defer(d3.json, "https://raw.githubusercontent.com/johan/world.geo.json/master/countries.geo.json")
     .defer(d3.csv,  "/DataParse/Regions.csv", function(d) {
-       
-      if(selectedRegion == d.RegionOfOrigin)
-      data.set(d.Country,[d.y1995,d.y1996,d.y1997,d.y1998,d.y1999,d.y2000,d.y2001,d.y2002,d.y2003,d.y2004,d.y2005,d.y2006,d.y2007,d.y2008,d.y2009,d.y2010,d.y2011,d.y2012,d.y2013,d.y2014,d.y2015,d.y2016,d.y2017,d.y2018,d.y2019]);
-      })
-    .await(ready);
-  }
+      if(selectedRegion == d.RegionOfOrigin){
+      var years = [d.y1995,d.y1996,d.y1997,d.y1998,d.y1999,d.y2000,d.y2001,d.y2002,d.y2003,d.y2004,d.y2005,d.y2006,d.y2007,d.y2008,d.y2009,d.y2010,d.y2011,d.y2012,d.y2013,d.y2014,d.y2015,d.y2016,d.y2017,d.y2018,d.y2019]
+      data.set(d.Country, years);
+    }
+    
+  })
+  .await(ready);
+}
 }
 
 update();
-
 const buttons = d3.selectAll('input');
 buttons.on('change', function(d) {
   selectedRegion = this.value;
@@ -47,10 +49,11 @@ buttons.on('change', function(d) {
 });
 
 /** GRADIENT BUSINESS */
-console.log(countryMax);
+var somData = [0, 211998];
 
-var somData = [0,10,50,100,500,1000,5000,10000,50000,100000,500000]
-var colours = ["#2c7bb6", "#00a6ca","#00ccbc"];
+
+
+var colours = [	"#bedaf7","#7ab3ef","#368ce7","#1666ba","#0000FF"];
 var colourRange = d3.range(0, 1, 1.0 / (colours.length - 1));
 colourRange.push(1);
 		   
@@ -176,27 +179,30 @@ function ready(error, topo) {
       })
       // set the color of each country
       .attr("fill", function (d) {
-        if(data.get(d.properties.name.toUpperCase()) || 0){
+        if(data.get(d.properties.name.toUpperCase())){
           
           d.total = data.get(d.properties.name.toUpperCase())[currYear];
           var color = d.total;
+          
+          if(color == "" || color =="..") {return "white"};
+          console.log(color)
           return colorScale(colorInterpolate(color)); 
+        
         }else{
           // Country is missing from data
-          console.log(d.properties.name.toUpperCase());
           return "white";
         }
       })
       .on('mouseover', function (d, i) {
         d3.select(this).transition()
              .duration('50')
-             .attr('opacity', '0.8');
+             .attr('opacity', '0.6');
         //Merge regions
-              for (var i = 0; i < sets.length; i++) {
-                if (sets[i].set.has(d.id)){
-                  console.log(sets[i].name);
-                }
-              }
+              // for (var i = 0; i < sets.length; i++) {
+              //   if (sets[i].set.has(d.id)){
+              //     console.log(sets[i].name);
+              //   }
+              // }
       })
       .on('mouseout', function (d, i) {
         d3.select(this).transition()
