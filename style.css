@@ -1,18 +1,58 @@
 body {
-    background: #DADADA;
     font-family: sans-serif;
+    background:#b2c1dd;
     width:100%;
+    font-family: 'Nunito', sans-serif;
+}
+.inputs{
+    width: 100%;
+    display: flex;
+    flex-wrap: wrap;
 }
 
-.inputs{
-    display: block;
+.inputs label{
+    border-radius: 3px;
+    padding:0.5rem;
+    font-size: 1rem;
+    color:white;
+    margin:0.2rem;
 }
+
+#total{
+    background: lightblue;
+}
+#africa{
+    background: green;
+}
+#americas{
+    background: blue;
+}
+#east-asia{
+    background: red;
+}
+#europe{
+    background: yellow;
+}
+#middle-east{
+    background: sandybrown;
+}
+#south-asia{
+    background: lightgreen;
+}
+#other{
+    background: grey;
+}
+
+
 
 .wrapper{
-    width:1000px;
+    padding:2rem;
+    width:100%;
+    max-width:1000px;
     margin:auto;
+    
+    background: #dadada;
 }
-
 .slider{
     position: relative;
     width:100%;
@@ -32,12 +72,27 @@ body {
     margin:auto;
 }
 
-.interface{
-    width:100%;
-    display:flex;
-    justify-content:center;
+.interface svg{
+    padding:1rem;
+    color:white;
 }
 
+.interface svg text{
+    font-size: 12px;
+    fill:white;
+}
+
+
+.interface{
+    margin:1rem;
+    border-radius: 1rem;
+    background: #1a2e50;
+    width:fit-content;
+    margin:auto;
+    display:flex;
+    justify-content:center;
+    flex-direction: row-reverse;
+}
 
 .selected{
   fill:red;

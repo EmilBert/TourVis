@@ -12,21 +12,26 @@
     <script src="https://d3js.org/d3-scale-chromatic.v1.min.js"></script>
     <script src="https://d3js.org/d3-geo-projection.v2.min.js"></script>
     <script src="https://unpkg.com/d3-simple-slider"></script>
+
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Nunito&display=swap" rel="stylesheet">
   </head>
   <body>
     <div class="wrapper">
       <div class="inputs">
-        <input type="radio" name="region" value="Total" checked><label>Total</label>
-        <input type="radio" name="region" value="Africa"><label>Africa</label>
-        <input type="radio" name="region" value="Americas"><label>Americas</label>
-        <input type="radio" name="region" value="East Asia and the Pacific"><label>East Asia and the Pacific</label>
-        <input type="radio" name="region" value="Europe"><label>Europe</label>
-        <input type="radio" name="region" value="Middle East"><label>Middle East</label>
-        <input type="radio" name="region" value="South Asia"><label>South Asia</label>
-        <input type="radio" name="region" value="Other not classified"><label>Other not classified</label>
+        <label id="total"      ><input type="radio" name="region" value="Total" checked>Total</label><br>
+        <label id="africa"     ><input type="radio" name="region" value="Africa">Africa</label><br>
+        <label id="americas"   ><input type="radio" name="region" value="Americas">Americas</label><br>
+        <label id="east-asia" ><input type="radio" name="region" value="East Asia and the Pacific">East Asia and the Pacific</label><br>
+        <label id="europe"     ><input type="radio" name="region" value="Europe">Europe</label><br>
+        <label id="middle-east"><input type="radio" name="region" value="Middle East">Middle East</label><br>
+        <label id="south-asia" ><input type="radio" name="region" value="South Asia">South Asia</label><br>
+        <label id="other"><input  type="radio" name="region" value="Other not classified">Other not classified</label><br>
       </div>
 
       <div class="interface">
+
         <svg id="map" width="700" height="400"></svg>
       </div>
 

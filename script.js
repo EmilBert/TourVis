@@ -251,13 +251,13 @@ var scale = d3.scale.linear()
 var yAxis = d3.axisRight(scale)
     .tickSize(barWidth * 2) 
     .ticks(4)
-    .tickFormat(x => x);
+    .tickFormat(x => 200000-x);
 
-var svgB = d3.select("body").append("svg").attr("width", width).attr("height", height);
+var svgB = d3.select(".interface").append("svg").attr("width", width).attr("height", height);
 var g = svgB.append("g").attr("transform", "translate(0," + padding + ")");
 
 var defs = svg.append("defs");
-    var linearGradient = defs.append("linearGradient").attr("id", "myGradient").attr("x1", "0%").attr("x2", "0%").attr("y1", "0%").attr("y2", "100%");
+    var linearGradient = defs.append("linearGradient").attr("id", "myGradient").attr("x1", "0%").attr("x2", "0%").attr("y1", "100%").attr("y2", "0%");
     linearGradient.selectAll("stop")
         .data(colours)
       .enter().append("stop")
