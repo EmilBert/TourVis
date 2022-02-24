@@ -216,3 +216,38 @@ function bar(){
     
     })
 }
+
+//Legend
+var height = 400;
+var width = 60;
+var padding = 10;
+var innerHeight = height - 2*padding;
+var barWidth = 8;
+
+var scale = d3.scale.linear()
+    .domain(d3.extent(somData))
+    .range([0, height]);
+var yAxis = d3.axisRight(scale)
+    .tickSize(barWidth * 2) 
+    .ticks(4)
+    .tickFormat(x => x);
+
+var svgB = d3.select("body").append("svg").attr("width", width).attr("height", height);
+var g = svgB.append("g").attr("transform", "translate(0," + padding + ")");
+
+var defs = svg.append("defs");
+    var linearGradient = defs.append("linearGradient").attr("id", "myGradient").attr("x1", "0%").attr("x2", "0%").attr("y1", "0%").attr("y2", "100%");
+    linearGradient.selectAll("stop")
+        .data(colours)
+      .enter().append("stop")
+        .attr("offset", function(d,i) { return i/(colours.length-1); })
+        .attr("stop-color", function(d) { return d; });
+
+g.append("rect")
+  .attr("height", innerHeight)
+  .attr("width", barWidth)
+  .style("fill", "url(#myGradient)");
+
+g.append("g")
+  .call(yAxis)
+  .select(".domain").remove();
