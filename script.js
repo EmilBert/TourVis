@@ -4,6 +4,7 @@ var width = +svg.attr("width");
 var height = width*0.6;
 
 var currYear = 9;
+var currnetCountry = 'SWEDEN';
 
 var selectedRegion = "Total";
 var selectedCountry = "";
@@ -98,6 +99,7 @@ var dataTime = d3.range(0, 25).map(function(d) {
       d3.select('p#value-time').text(d3.timeFormat('%Y')(val));
       currYear=(Math.floor(val/step))-25;
       update(currYear);
+      bar(currentCountry)
     });
 
   var gTime = d3
@@ -148,12 +150,6 @@ function ready(error, topo) {
         d3.select(this).transition()
              .duration('50')
              .attr('opacity', '0.6');
-        //Merge regions
-              // for (var i = 0; i < sets.length; i++) {
-              //   if (sets[i].set.has(d.id)){
-              //     console.log(sets[i].name);
-              //   }
-              // }
       })
       .on('mouseout', function (d, i) {
         d3.select(this).transition()
@@ -164,7 +160,8 @@ function ready(error, topo) {
 
 function selected() {
   d3.select('.selected').classed('selected', false);
-  bar(this.id);
+  currentCountry=this.id;
+  bar(currentCountry);
   d3.select(this).classed('selected', true);
 }
 
@@ -184,6 +181,10 @@ var svgA = d3.select("#d3-container")
 
  //Draw the bar and parse the data
  function bar(country){
+
+  svgA.selectAll("g").remove();
+  svgA.selectAll("rect").remove();
+
   // Parse the Data
   d3.csv("/DataParse/Regions.csv", function(d) {
     
@@ -195,7 +196,7 @@ var svgA = d3.select("#d3-container")
         found++;
       }
     }
-    
+
     regionDataCurrent = [ parseFloat(regionData.get("Africa")[currYear]), 
                           parseFloat(regionData.get("Americas")[currYear]),
                           parseFloat(regionData.get("East Asia and the Pacific")[currYear]),
@@ -203,14 +204,16 @@ var svgA = d3.select("#d3-container")
                           parseFloat(regionData.get("Middle East")[currYear]),
                           parseFloat(regionData.get("South Asia")[currYear]),
                           parseFloat(regionData.get("Other not classified")[currYear])];
-
+//Make all nan=0 for display
 for (i=0; i<7; i++){
   if (Number.isNaN(regionDataCurrent[i])){
     regionDataCurrent[i]=0;
   }
-
-
 }
+var max = Math.max(...regionDataCurrent);
+console.log(max);
+console.log(regionDataCurrent)
+
 
 const data1 = [
   {region: 'Africa', value: regionDataCurrent[0]},
@@ -228,7 +231,6 @@ const data1 = [
     .range([ 0, width_bar ])
     .domain(data1.map(function(data1){return data1.region}))
     .padding(0.2);
-    svgA.selectAll("g").remove();
     svgA.append("g")
       .attr("transform", "translate(0," + height_bar + ")")
       .call(d3.axisBottom(x))
@@ -238,7 +240,7 @@ const data1 = [
     
     // Add Y axis
     var y = d3.scaleLinear()
-      .domain([0, 30000])
+      .domain([0, max])
       .range([ height_bar, 0]);
       svgA.append("g").call(d3.axisLeft(y));
 
