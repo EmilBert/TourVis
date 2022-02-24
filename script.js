@@ -6,6 +6,7 @@ var height = width*0.6;
 var currYear = 9;
 
 var selectedRegion = "Total";
+var selectedCountry = "";
 
 //Append a defs (for definition) element to your SVG
 var defs = svg.append("defs");
@@ -19,27 +20,29 @@ var projection = d3.geoMercator()
 
 // Data
 var data = d3.map();
-var countryMax = 0;
+var regionData = d3.map();
 
 function update(){
   if(selectedRegion == "Total"){
     d3.queue().defer(d3.json, "https://raw.githubusercontent.com/johan/world.geo.json/master/countries.geo.json")
     .defer(d3.csv,  "/DataParse/arrivals.csv", function(d) { 
-      data.set(d.Country, [d.y1995,d.y1996,d.y1997,d.y1998,d.y1999,d.y2000,d.y2001,d.y2002,d.y2003,d.y2004,d.y2005,d.y2006,d.y2007,d.y2008,d.y2009,d.y2010,d.y2011,d.y2012,d.y2013,d.y2014,d.y2015,d.y2016,d.y2017,d.y2018,d.y2019]); })
+      data.set(d.Country, [d.y1995,d.y1996,d.y1997,d.y1998,d.y1999,d.y2000,d.y2001,d.y2002,d.y2003,d.y2004,d.y2005,d.y2006,d.y2007,d.y2008,d.y2009,d.y2010,d.y2011,d.y2012,d.y2013,d.y2014,d.y2015,d.y2016,d.y2017,d.y2018,d.y2019]); 
+    })
     .await(ready);
   }
   else{
     d3.queue().defer(d3.json, "https://raw.githubusercontent.com/johan/world.geo.json/master/countries.geo.json")
     .defer(d3.csv,  "/DataParse/Regions.csv", function(d) {
       if(selectedRegion == d.RegionOfOrigin){
-      var years = [d.y1995,d.y1996,d.y1997,d.y1998,d.y1999,d.y2000,d.y2001,d.y2002,d.y2003,d.y2004,d.y2005,d.y2006,d.y2007,d.y2008,d.y2009,d.y2010,d.y2011,d.y2012,d.y2013,d.y2014,d.y2015,d.y2016,d.y2017,d.y2018,d.y2019]
-      data.set(d.Country, years);
-    }
-    
-  })
-  .await(ready);
+        var years = [d.y1995,d.y1996,d.y1997,d.y1998,d.y1999,d.y2000,d.y2001,d.y2002,d.y2003,d.y2004,d.y2005,d.y2006,d.y2007,d.y2008,d.y2009,d.y2010,d.y2011,d.y2012,d.y2013,d.y2014,d.y2015,d.y2016,d.y2017,d.y2018,d.y2019]
+        data.set(d.Country, years);
+      }})
+    .await(ready)
+  }
 }
-}
+
+
+
 
 update();
 const buttons = d3.selectAll('input');
@@ -50,9 +53,6 @@ buttons.on('change', function(d) {
 
 /** GRADIENT BUSINESS */
 var somData = [0, 211998];
-
-
-
 var colours = [	"#bedaf7","#7ab3ef","#368ce7","#1666ba","#0000FF"];
 var colourRange = d3.range(0, 1, 1.0 / (colours.length - 1));
 colourRange.push(1);
@@ -127,6 +127,7 @@ function ready(error, topo) {
     .attr("d", d3.geoPath()
     .projection(projection))
     .attr("id", function(d){return d.properties.name.toUpperCase();})
+    .attr("value", function(d){return d.properties.name.toUpperCase();})
       // set the color of each country
       .attr("fill", function (d) {
         if(data.get(d.properties.name.toUpperCase())){
@@ -135,7 +136,7 @@ function ready(error, topo) {
           var color = d.total;
           
           if(color == "" || color =="..") {return "white"};
-          console.log(color)
+          //console.log(color)
           return colorScale(colorInterpolate(color)); 
         
         }else{
@@ -163,6 +164,7 @@ function ready(error, topo) {
 
 function selected() {
   d3.select('.selected').classed('selected', false);
+  bar(this.id);
   d3.select(this).classed('selected', true);
 }
 
@@ -180,15 +182,36 @@ var svgA = d3.select("#d3-container")
   .append("g")
   .attr("transform", "translate(" + margin_bar.left + "," + margin_bar.top + ")");
 
-function bar(){
+function bar(country){
   // Parse the Data
-  d3.csv("/DataParse/Regions.csv", function(data1) {
+  d3.csv("/DataParse/Regions.csv", function(d) {
+    
+    console.log(d);
 
-    // X axis
+    let found = 0;
+    for(let i=0; i < 1561 || found < 7;i++){
+      if(country == d[i].Country){
+        regionData.set(d[i].RegionOfOrigin, [d.y1995,d.y1996,d.y1997,d.y1998,d.y1999,d.y2000,d.y2001,d.y2002,d.y2003,d.y2004,d.y2005,d.y2006,d.y2007,d.y2008,d.y2009,d.y2010,d.y2011,d.y2012,d.y2013,d.y2014,d.y2015,d.y2016,d.y2017,d.y2018,d.y2019]);
+        found++;
+      }
+    }
+    console.log(regionData);
+
+    regionDataCurrent = [ regionData.get("Africa")[currYear], 
+                          regionData.get("Americas")[currYear],
+                          regionData.get("East Asia and the Pacific")[currYear],
+                          regionData.get("Europe")[currYear],
+                          regionData.get("Middle East")[currYear],
+                          regionData.get("South Asia")[currYear],
+                          regionData.get("Other not classified")[currYear]];
+
+      // X axis
     var x = d3.scaleBand()
-      .range([ 0, width_bar ])
-      .domain(data1.map(function(d) { return d.RegionOfOrigin; }))
-      .padding(0.2);
+    .range([ 0, width_bar ])
+    .domain(d.map(function(d) { 
+      return d.RegionOfOrigin; }))
+    .padding(0.2);
+    svgA.selectAll("g").remove();
     svgA.append("g")
       .attr("transform", "translate(0," + height_bar + ")")
       .call(d3.axisBottom(x))
@@ -200,20 +223,18 @@ function bar(){
     var y = d3.scaleLinear()
       .domain([0, 13000])
       .range([ height_bar, 0]);
-    svgA.append("g")
-      .call(d3.axisLeft(y));
-    
+      svgA.append("g").call(d3.axisLeft(y));
+
     // Bars
     svgA.selectAll("mybar")
       .data(data)
       .enter()
       .append("rect")
-        .attr("x", function(d) { return x(d.RegionOfOrigin); }) 
-        .attr("y", function(d) { return y(); })         //Värdet på y-axeln
-        .attr("width", x.bandwidth())
-        .attr("height", function(d) { return height_bar - y(d.Value); })
-        .attr("fill", "#69b3a2")
-    
+      .attr("x", function(d) { return x(d.RegionOfOrigin); }) 
+      .attr("y", function(d) { return y(regionDataCurrent); }) //Värdet på y-axeln
+      .attr("width", x.bandwidth())
+      .attr("height", function(d) { return height_bar - y(d.Value); })
+      .attr("fill", "#69b3a2")
     })
 }
 
