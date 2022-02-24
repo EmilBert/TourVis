@@ -182,34 +182,51 @@ var svgA = d3.select("#d3-container")
   .append("g")
   .attr("transform", "translate(" + margin_bar.left + "," + margin_bar.top + ")");
 
-function bar(country){
+ //Draw the bar and parse the data
+ function bar(country){
   // Parse the Data
   d3.csv("/DataParse/Regions.csv", function(d) {
     
-    console.log(d);
 
     let found = 0;
     for(let i=0; i < 1561 || found < 7;i++){
       if(country == d[i].Country){
-        regionData.set(d[i].RegionOfOrigin, [d.y1995,d.y1996,d.y1997,d.y1998,d.y1999,d.y2000,d.y2001,d.y2002,d.y2003,d.y2004,d.y2005,d.y2006,d.y2007,d.y2008,d.y2009,d.y2010,d.y2011,d.y2012,d.y2013,d.y2014,d.y2015,d.y2016,d.y2017,d.y2018,d.y2019]);
+        regionData.set(d[i].RegionOfOrigin, [d[i].y1995,d[i].y1996,d[i].y1997,d[i].y1998,d[i].y1999,d[i].y2000,d[i].y2001,d[i].y2002,d[i].y2003,d[i].y2004,d[i].y2005,d[i].y2006,d[i].y2007,d[i].y2008,d[i].y2009,d[i].y2010,d[i].y2011,d[i].y2012,d[i].y2013,d[i].y2014,d[i].y2015,d[i].y2016,d[i].y2017,d[i].y2018,d[i].y2019]);
         found++;
       }
     }
-    console.log(regionData);
+    
+    regionDataCurrent = [ parseFloat(regionData.get("Africa")[currYear]), 
+                          parseFloat(regionData.get("Americas")[currYear]),
+                          parseFloat(regionData.get("East Asia and the Pacific")[currYear]),
+                          parseFloat(regionData.get("Europe")[currYear]),
+                          parseFloat(regionData.get("Middle East")[currYear]),
+                          parseFloat(regionData.get("South Asia")[currYear]),
+                          parseFloat(regionData.get("Other not classified")[currYear])];
 
-    regionDataCurrent = [ regionData.get("Africa")[currYear], 
-                          regionData.get("Americas")[currYear],
-                          regionData.get("East Asia and the Pacific")[currYear],
-                          regionData.get("Europe")[currYear],
-                          regionData.get("Middle East")[currYear],
-                          regionData.get("South Asia")[currYear],
-                          regionData.get("Other not classified")[currYear]];
+for (i=0; i<7; i++){
+  if (Number.isNaN(regionDataCurrent[i])){
+    regionDataCurrent[i]=0;
+  }
 
+
+}
+
+const data1 = [
+  {region: 'Africa', value: regionDataCurrent[0]},
+  {region: 'Americas', value: regionDataCurrent[1]},
+  {region: 'East Asia and the Pacific', value: regionDataCurrent[2]},
+  {region: 'Europe', value: regionDataCurrent[3]},
+  {region: 'Middle East', value: regionDataCurrent[4]}, 
+  {region: 'South Asia', value: regionDataCurrent[5]},
+  {region: 'Other not classified', value: regionDataCurrent[6]}
+];
+  
+    
       // X axis
     var x = d3.scaleBand()
     .range([ 0, width_bar ])
-    .domain(d.map(function(d) { 
-      return d.RegionOfOrigin; }))
+    .domain(data1.map(function(data1){return data1.region}))
     .padding(0.2);
     svgA.selectAll("g").remove();
     svgA.append("g")
@@ -221,19 +238,19 @@ function bar(country){
     
     // Add Y axis
     var y = d3.scaleLinear()
-      .domain([0, 13000])
+      .domain([0, 30000])
       .range([ height_bar, 0]);
       svgA.append("g").call(d3.axisLeft(y));
 
     // Bars
     svgA.selectAll("mybar")
-      .data(data)
+      .data(data1)
       .enter()
       .append("rect")
-      .attr("x", function(d) { return x(d.RegionOfOrigin); }) 
-      .attr("y", function(d) { return y(regionDataCurrent); }) //Värdet på y-axeln
+      .attr("x", function(data1) {return x(data1.region)}) 
+      .attr("y", function(data1) {return y(data1.value)})
       .attr("width", x.bandwidth())
-      .attr("height", function(d) { return height_bar - y(d.Value); })
+      .attr("height", function(data1){return height_bar - y(data1.value);})
       .attr("fill", "#69b3a2")
     })
 }
