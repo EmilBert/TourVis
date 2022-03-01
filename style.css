@@ -1,57 +1,72 @@
 body {
     font-family: sans-serif;
-    background:#b2c1dd;
     width:100%;
-    font-family: 'Nunito', sans-serif;
+    font-family: 'Inter', sans-serif;
+    background: #dadada;
 }
 .inputs{
     width: 100%;
     display: flex;
     flex-wrap: wrap;
+    margin:0.5rem 0;
 }
 
 .inputs label{
-    border-radius: 3px;
-    padding:0.5rem;
-    font-size: 1rem;
-    color:white;
+    border-radius: 0.3rem;
+    padding:0.3rem;
+    font-size: 0.5rem;
+    color:#dadada;
     margin:0.2rem;
+    font-size: small;
 }
+.inputs label:hover{
+    transform: scale(1.05);
+}
+
+.inputs input{display:none}
 
 #total{
-    background: lightblue;
+    background: rgb(140, 190, 207);
 }
 #africa{
-    background: green;
+    background: rgb(21, 109, 21);
+    
 }
 #americas{
-    background: blue;
+    background: rgb(51, 96, 192);
+   
 }
 #east-asia{
-    background: red;
+    background: rgb(146, 48, 48);
+    
 }
 #europe{
-    background: yellow;
+    background: rgb(159, 170, 0);
+  
 }
 #middle-east{
-    background: sandybrown;
+    background: rgb(107, 87, 21);
+    
 }
 #south-asia{
-    background: lightgreen;
+    background: rgb(57, 119, 57);
+  
 }
 #other{
-    background: grey;
+    background: rgb(102, 100, 100);
+    
 }
-
-
+input:checked + label {
+    color:white;
+    text-decoration: underline;
+    transform: scale(1.05);
+}
 
 .wrapper{
     padding:2rem;
     width:100%;
     max-width:1000px;
     margin:auto;
-    
-    background: #dadada;
 }
 .slider{
     position: relative;
@@ -72,16 +87,14 @@ body {
     margin:auto;
 }
 
-.interface svg{
+.interface{
     padding:1rem;
-    color:white;
 }
 
 .interface svg text{
     font-size: 12px;
     fill:white;
 }
-
 
 .interface{
     margin:1rem;
@@ -94,6 +107,20 @@ body {
     flex-direction: row-reverse;
 }
 
+path{
+    stroke: rgb(0,0,0,0.1);
+    stroke-width: 0.1px;
+}
+
 .selected{
-  fill:red;
+  fill:#69b3a2;
+}
+#map-container{
+    margin: 0 2rem;
+    width:28rem;
+    border:solid 1px white;  
+}
+
+#map{
+ 
 }

@@ -12,39 +12,41 @@
     <script src="https://d3js.org/d3-scale-chromatic.v1.min.js"></script>
     <script src="https://d3js.org/d3-geo-projection.v2.min.js"></script>
     <script src="https://unpkg.com/d3-simple-slider"></script>
-
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Nunito&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Inter&display=swap" rel="stylesheet">
   </head>
   <body>
     <div class="wrapper">
+      <h1>TourVis</h1>
+
       <div class="inputs">
-        <label id="total"      ><input type="radio" name="region" value="Total" checked>Total</label><br>
-        <label id="africa"     ><input type="radio" name="region" value="Africa">Africa</label><br>
-        <label id="americas"   ><input type="radio" name="region" value="Americas">Americas</label><br>
-        <label id="east-asia" ><input type="radio" name="region" value="East Asia and the Pacific">East Asia and the Pacific</label><br>
-        <label id="europe"     ><input type="radio" name="region" value="Europe">Europe</label><br>
-        <label id="middle-east"><input type="radio" name="region" value="Middle East">Middle East</label><br>
-        <label id="south-asia" ><input type="radio" name="region" value="South Asia">South Asia</label><br>
-        <label id="other"><input  type="radio" name="region" value="Other not classified">Other not classified</label><br>
+        <input id="1" type="radio" name="region" value="Total" checked><label for="1" id="total">Total</label><br>
+        <input id="2" type="radio" name="region" value="Africa"><label for="2" id="africa">Africa</label><br>
+        <input id="3" type="radio" name="region" value="Americas"> <label for="3" id="americas">Americas</label>
+        <input id="4" type="radio" name="region" value="East Asia and the Pacific"><label for="4" id="east-asia">East Asia and the Pacific</label><br>
+        <input id="5" type="radio" name="region" value="Europe"><label for="5" id="europe">Europe</label><br>
+        <input id="6" type="radio" name="region" value="Middle East"><label for="6" id="middle-east">Middle East</label><br>
+        <input id="7" type="radio" name="region" value="South Asia"><label  for="7" id="south-asia" >South Asia</label><br>
+        <input id="8" type="radio" name="region" value="Other not classified"><label for="8" id="other">Other not classified</label><br> 
       </div>
 
       <div class="interface">
-
-        <svg id="map" width="700" height="400"></svg>
+        <div id="d3-container"></div>
+        <div id="map-container">
+        </div>
       </div>
-
+      
       <div class="slider">
-          
-          <div id="slider-time"><div class="slider-text">
-            <h2>Year</h2><p id="value-time"></p>
-          </div></div>
+        
+        <div id="slider-time"><div class="slider-text">
+          <h2>Year</h2><p id="value-time"></p>
+        </div></div>
       </div>
     </div>
-
-<div id="d3-container"></div>
-<script src="barchart.js"></script>
+    
+    
   </body>
+  <script src="barchart.js"></script>
   <script src="script.js"></script>
 </html>

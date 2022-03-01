@@ -8,7 +8,7 @@ var currnetCountry = 'SWEDEN';
 
 var selectedRegion = "Total";
 var selectedCountry = "";
-
+const zoom = d3.zoom();
 //Append a defs (for definition) element to your SVG
 var defs = svg.append("defs");
 
@@ -42,6 +42,16 @@ function update(){
   }
 }
 
+
+var svg = d3.select("#map-container")
+ .append("svg")
+ .attr('id', 'map')
+ .attr("width", "100%")
+ .attr("height", "100%")
+ .call(d3.zoom().on("zoom", function () {
+    svg.attr("transform", d3.event.transform)
+ }))
+ .append("g")
 
 
 
@@ -155,8 +165,11 @@ function ready(error, topo) {
         d3.select(this).transition()
              .duration('50')
              .attr('opacity', '1');
-      }).on('click', selected);
+      }).on('click', selected)
 }
+
+
+
 
 function selected() {
   d3.select('.selected').classed('selected', false);
@@ -172,12 +185,6 @@ width_bar = 460 - margin.left - margin.right,
 height_bar = 400 - margin.top - margin.bottom;
           
 // append the svg object to the body of the page
-var svgA = d3.select("#d3-container")
-  .append("svg")
-  .attr("width", width_bar + margin_bar.left + margin_bar.right)
-  .attr("height", height_bar + margin_bar.top + margin_bar.bottom)
-  .append("g")
-  .attr("transform", "translate(" + margin_bar.left + "," + margin_bar.top + ")");
 
  //Draw the bar and parse the data
  function bar(country){
