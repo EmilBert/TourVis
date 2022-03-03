@@ -88,7 +88,7 @@ input:checked + label {
 }
 
 .interface{
-    padding:1rem;
+    padding:3rem 1rem 3rem 1rem;
 }
 
 .interface svg text{
@@ -109,6 +109,7 @@ input:checked + label {
 }
 
 path{
+    transition: all 0.05s ease-in-out;
     stroke: rgb(0,0,0,0.1);
     stroke-width: 0.1px;
 }
@@ -126,6 +127,6 @@ path{
     border:solid 1px white;  
 }
 
-#map{
- 
+#d3-container svg{
+    overflow: visible;
 }

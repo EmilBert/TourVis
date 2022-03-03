@@ -1,7 +1,7 @@
 // The svg
 var svg = d3.select("svg");
 var width = +svg.attr("width");
-var height = width*0.6;
+var height = width*0.8;
 
 var currYear = 9;
 var currnetCountry = 'SWEDEN';
@@ -194,7 +194,6 @@ height_bar = 400 - margin.top - margin.bottom;
 
   svgA.selectAll("g").remove();
   svgA.selectAll("rect").remove();
-  svgA.selectAll("text").remove();
   console.log("Bar saker tas bort")
   // Parse the Data
   d3.csv("/DataParse/Regions.csv", function(d) {
