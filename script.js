@@ -133,9 +133,16 @@ var dataTime = d3.range(0, 25).map(function(d) {
 
 
 function ready(error, topo) {
-
   // Draw the map
   svg.selectAll("g").remove();
+
+  var tooltip = d3.select("body")
+    .append("div")
+    .style("position", "absolute")
+    .style("z-index", "10")
+    .style("visibility", "hidden")
+    .style("background", "#000")
+    .text("a simple tooltip");
 
   svg.append("g")
     .selectAll("path")
@@ -157,7 +164,6 @@ function ready(error, topo) {
           if(color == "" || color =="..") {return "white"};
           //console.log(color)
           return colorScale(colorInterpolate(color)); 
-        
         }else{
           // Country is missing from data
           return "white";
@@ -167,13 +173,22 @@ function ready(error, topo) {
         d3.select(this).transition()
              .duration('50')
              .attr('opacity', '0.6');
+             tooltip.text(d);
+             return tooltip.style("visibility", "visible");
       })
       .on('mouseout', function (d, i) {
         d3.select(this).transition()
              .duration('50')
              .attr('opacity', '1');
+             return tooltip.style("visibility", "hidden");
       }).on('click', selected)
+      .on("mousemove", function(){
+        return tooltip.style("top", (d3.event.pageY-10)+"px").style("left",(d3.event.pageX+10)+"px");
+      });
+      
 }
+
+
 
 function selected() {
   d3.select('.selected').classed('selected', false);
