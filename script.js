@@ -95,21 +95,28 @@ var dataTime = d3.range(0, 25).map(function(d) {
     return new Date(1995 + d, 10, 3);
   });
 
+  var temp = currYear;
   var step = 1000 * 60 * 60 * 24 * 365;
   var sliderTime = 
   d3.sliderBottom()
     .min(d3.min(dataTime))
     .max(d3.max(dataTime))
     .step(step)
-    .width(width)
+    .width(width+200)
     .tickFormat(d3.timeFormat('%Y'))
     .tickValues(dataTime)
     .default(new Date(2004, 10, 3))
     .on('onchange', val => {
-      d3.select('p#value-time').text(d3.timeFormat('%Y')(val));
       currYear=(Math.floor(val/step))-25;
-      update(currYear);
-      bar(currentCountry)
+      if(currYear != temp){
+        console.log("OnChange kallas")
+        d3.select('p#value-time').text(d3.timeFormat('%Y')(val));
+        update(currYear);
+        bar(currentCountry);
+        temp = currYear;
+      }
+
+      
     });
 
   var gTime = d3
@@ -168,9 +175,6 @@ function ready(error, topo) {
       }).on('click', selected)
 }
 
-
-
-
 function selected() {
   d3.select('.selected').classed('selected', false);
   currentCountry=this.id;
@@ -184,14 +188,14 @@ var margin_bar = {top: 30, right: 30, bottom: 70, left: 60},
 width_bar = 460 - margin.left - margin.right,
 height_bar = 400 - margin.top - margin.bottom;
           
-// append the svg object to the body of the page
 
- //Draw the bar and parse the data
+//Draw the bar and parse the data
  function bar(country){
 
   svgA.selectAll("g").remove();
   svgA.selectAll("rect").remove();
-
+  svgA.selectAll("text").remove();
+  console.log("Bar saker tas bort")
   // Parse the Data
   d3.csv("/DataParse/Regions.csv", function(d) {
     
@@ -231,13 +235,12 @@ const data1 = [
   {region: 'South Asia', value: regionDataCurrent[5]},
   {region: 'Other not classified', value: regionDataCurrent[6]}
 ];
-  
-    
-      // X axis
+    // X axis
     var x = d3.scaleBand()
     .range([ 0, width_bar ])
     .domain(data1.map(function(data1){return data1.region}))
     .padding(0.2);
+    
     svgA.append("g")
       .attr("transform", "translate(0," + height_bar + ")")
       .call(d3.axisBottom(x))
@@ -265,6 +268,7 @@ const data1 = [
 }
 
 //Legend
+
 var height = 400;
 var width = 60;
 var padding = 10;

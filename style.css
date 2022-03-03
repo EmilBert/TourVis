@@ -105,6 +105,7 @@ input:checked + label {
     display:flex;
     justify-content:center;
     flex-direction: row-reverse;
+    overflow:visible;
 }
 
 path{
@@ -114,6 +115,10 @@ path{
 
 .selected{
   fill:#69b3a2;
+}
+
+#d3-container{
+    overflow:visible;
 }
 #map-container{
     margin: 0 2rem;
