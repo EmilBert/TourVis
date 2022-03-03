@@ -293,6 +293,19 @@ svgA.append("text")
       .attr("width", x.bandwidth())
       .attr("height", function(data1){return height_bar - y(data1.value);})
       .attr("fill", "#69b3a2")
+
+      svgA.selectAll(".bartext")
+      .data(data1)
+      .enter()
+      .append("text")
+      .classed('.bartext', true)
+      .attr("x", function(data1) {return x(data1.region)}) 
+      .attr("y", function(data1) {return y(data1.value)})
+      .attr("width", x.bandwidth())
+      .attr("height", function(data1){return height_bar - y(data1.value);})
+      .text(function(data1) {return (data1.value)})
+      .style("width", x.bandwidth());
+      
     })
 }
 
