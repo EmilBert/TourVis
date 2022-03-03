@@ -4,14 +4,14 @@ var width = +svg.attr("width");
 var height = width*0.8;
 
 var currYear = 9;
-var currnetCountry = 'SWEDEN';
+var currentCountry = 'SWEDEN';
 
 var selectedRegion = "Total";
 var selectedCountry = "";
 const zoom = d3.zoom();
 //Append a defs (for definition) element to your SVG
-var defs = svg.append("defs");
 
+var defs = svg.append("defs");
 // Map and projection
 var path = d3.geoPath();
 var projection = d3.geoMercator()
@@ -20,8 +20,8 @@ var projection = d3.geoMercator()
 .translate([width / 2, height / 2]);
 
 // Data
-var data = d3.map();
-var regionData = d3.map();
+var data        = d3.map();
+var regionData  = d3.map();
 
 function update(){
   if(selectedRegion == "Total"){
@@ -43,6 +43,7 @@ function update(){
 }
 
 
+// Zoom & Pan
 var svg = d3.select("#map-container")
  .append("svg")
  .attr('id', 'map')
@@ -51,11 +52,10 @@ var svg = d3.select("#map-container")
  .call(d3.zoom().on("zoom", function () {
     svg.attr("transform", d3.event.transform)
  }))
- .append("g")
-
-
-
+.append("g");
+ 
 update();
+
 const buttons = d3.selectAll('input');
 buttons.on('change', function(d) {
   selectedRegion = this.value;
@@ -115,8 +115,6 @@ var dataTime = d3.range(0, 25).map(function(d) {
         bar(currentCountry);
         temp = currYear;
       }
-
-      
     });
 
   var gTime = d3
@@ -128,21 +126,20 @@ var dataTime = d3.range(0, 25).map(function(d) {
     .attr('transform', 'translate(30,30)');
 
   gTime.call(sliderTime);
-
   d3.select('p#value-time').text(d3.timeFormat('%Y')(sliderTime.value()));
-
 
 function ready(error, topo) {
   // Draw the map
   svg.selectAll("g").remove();
+  d3.selectAll(".tooltip").remove();
+  
 
   var tooltip = d3.select("body")
     .append("div")
-    .style("position", "absolute")
-    .style("z-index", "10")
-    .style("visibility", "hidden")
-    .style("background", "#000")
-    .text("a simple tooltip");
+    .attr("class","tooltip");
+
+  d3.select(".tooltip").append("h4");
+  d3.select(".tooltip").append("p");
 
   svg.append("g")
     .selectAll("path")
@@ -170,10 +167,18 @@ function ready(error, topo) {
         }
       })
       .on('mouseover', function (d, i) {
+        
+        console.log(tooltip);
+        if(data.get(d.properties.name.toUpperCase())){
+          console.log("Arrivals: "+data.get(d.properties.name.toUpperCase())[currYear]+" "+ this.id);
+          var arrivals = data.get(d.properties.name.toUpperCase())[currYear];
+          arrivals = arrivals != "" ? arrivals+" Arr." :"Missing data";
+        }
         d3.select(this).transition()
-             .duration('50')
+            .duration('50')
              .attr('opacity', '0.6');
-             tooltip.text(d);
+             tooltip.select("h4").text(this.id);
+             tooltip.select("p").text(arrivals);
              return tooltip.style("visibility", "visible");
       })
       .on('mouseout', function (d, i) {

@@ -131,6 +131,25 @@ path{
     overflow: visible;
 }
 
+.tooltip{
+  position: absolute;
+  z-index: 10;
+  color:black;
+  visibility: hidden;
+  background:white;
+  border-radius: 0.5rem;
+  padding:0.5rem;  
+  font-size: 0.8rem;
+}
+
+.tooltip h4{ 
+    margin:0;
+}
+
+.tooltip p{ 
+    margin:0;
+}
+
 rect{
     transition: all 0.1s ease-in-out;
 }
