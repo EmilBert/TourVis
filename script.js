@@ -209,6 +209,7 @@ height_bar = 400 - margin.top - margin.bottom;
 
   svgA.selectAll("g").remove();
   svgA.selectAll("rect").remove();
+  svgA.selectAll("text").remove();
   console.log("Bar saker tas bort")
   // Parse the Data
   d3.csv("/DataParse/Regions.csv", function(d) {
@@ -249,6 +250,15 @@ const data1 = [
   {region: 'South Asia', value: regionDataCurrent[5]},
   {region: 'Other not classified', value: regionDataCurrent[6]}
 ];
+
+
+svgA.append("text")
+.attr("text-anchor", "start")
+.attr("x", 0)
+.attr("y", -20)
+.text(country);
+
+
     // X axis
     var x = d3.scaleBand()
     .range([ 0, width_bar ])
