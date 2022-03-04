@@ -62,16 +62,28 @@ buttons.on('change', function(d) {
   update();
 });
 
+colorsPerRegion= [
+  {"region":"Total","colors":[	"#bedaf7","#7ab3ef","#368ce7","#1666ba","#0000FF"]},
+  {"region":"Africa","colors":[	"#E1F2A2","#9ee98b","#84BF04","#3B7302","#154001"]},
+  {"region":"Americas"},
+  {"region":"East Asia and the pacific"},
+  {"region":"Europe"},
+  {"region":"Middle East"},
+  {"region":"South Asia"},
+  {"region":"Other not classified"}
+]
+
+
 /** GRADIENT BUSINESS */
 var somData = [0, 211998];
-var colours = [	"#bedaf7","#7ab3ef","#368ce7","#1666ba","#0000FF"];
-var colourRange = d3.range(0, 1, 1.0 / (colours.length - 1));
-colourRange.push(1);
+var colors = [	"#bedaf7","#7ab3ef","#368ce7","#1666ba","#0000FF"];
+var colorRange = d3.range(0, 1, 1.0 / (colors.length - 1));
+colorRange.push(1);
 		   
 //Create color gradient
 var colorScale = d3.scale.linear()
-	.domain(colourRange)
-	.range(colours)
+	.domain(colorRange)
+	.range(colors)
 	.interpolate(d3.interpolateHcl);
 
 //Needed to map the values of the dataset to the color scale
@@ -85,9 +97,9 @@ defs.append("linearGradient")
 	.attr("x1", "0%").attr("y1", "0%")
 	.attr("x2", "100%").attr("y2", "0%")
 	.selectAll("stop") 
-	.data(colours)                  
+	.data(colors)                  
 	.enter().append("stop") 
-	.attr("offset", function(d,i) { return i/(colours.length-1); })   
+	.attr("offset", function(d,i) { return i/(colors.length-1); })   
 	.attr("stop-color", function(d) { return d; });
 
 //Slider
@@ -298,7 +310,7 @@ svgA.append("text")
       .data(data1)
       .enter()
       .append("text")
-      .classed('.bartext', true)
+      .classed('bartext', true)
       .attr("x", function(data1) {return x(data1.region)}) 
       .attr("y", function(data1) {return y(data1.value)})
       .attr("width", x.bandwidth())
@@ -331,9 +343,9 @@ var g = svgB.append("g").attr("transform", "translate(0," + padding + ")");
 var defs = svg.append("defs");
     var linearGradient = defs.append("linearGradient").attr("id", "myGradient").attr("x1", "0%").attr("x2", "0%").attr("y1", "100%").attr("y2", "0%");
     linearGradient.selectAll("stop")
-        .data(colours)
+        .data(colors)
       .enter().append("stop")
-        .attr("offset", function(d,i) { return i/(colours.length-1); })
+        .attr("offset", function(d,i) { return i/(colors.length-1); })
         .attr("stop-color", function(d) { return d; });
 
 g.append("rect")
