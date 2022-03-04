@@ -373,7 +373,10 @@ svgA.append("text")
       .attr("width", x.bandwidth())
       .attr("height", function(data1){return height_bar - y(data1.value);})
       .text(function(data1) {return (data1.value)})
-      .style("width", x.bandwidth());
+      .style("width", x.bandwidth())
+      .attr("text-anchor", "middle")
+      .attr("transform", "translate(" + x.bandwidth()/2 + ",0)")
+
 
     })
 }
