@@ -1,3 +1,4 @@
+import numpy as np
 import pandas as pd
 
 arrivals = pd.read_excel("DataParse\\unwto-all-data-download.xlsx", sheet_name = 1, skiprows = lambda x: x < 2 or (x > 2 and (x-3) % 6 in [1, 3, 4, 5]) or x > 1340, usecols="D, F, L:AJ")
@@ -36,4 +37,15 @@ regions.dropna(thresh = 2, inplace=True)
 for column in regions:
     if column in column_list:
         regions.rename(columns={column: "y" + str(column)}, inplace=True) # Add "y" in front of all years for ease of implementation in JS
+
+regions = regions.reset_index()
+regions = regions.drop(columns=["index", "Country", "Region of Origin"])
+regions = regions.replace("..", np.nan)
+max_regions = [0] * 7
+print(regions.head(10))
+for index, row in regions.iterrows():
+    max_row = row.max(skipna=True)
+    if max_row > max_regions[index % 7]:
+        max_regions[index % 7] = max_row
+print(max_regions)
 # regions.to_csv("Regions.csv") # Save the modified data.
