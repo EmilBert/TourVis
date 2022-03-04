@@ -363,7 +363,7 @@ svgA.append("text")
     .text(function(data1) {return (data1.value)})
     .style("width", x.bandwidth())
     .attr("text-anchor", "middle")
-    .attr("transform", "translate(" + x.bandwidth()/2 + ",0)")
+    .attr("transform", "translate(" + x.bandwidth()/2 + ",-5)")
 })
 } 
 function updateGradientLegend(region)
