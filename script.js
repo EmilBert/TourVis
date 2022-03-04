@@ -1,3 +1,6 @@
+// Declaration & Initalization
+// --------------------------------------------------------------------------
+
 // The svg
 var svg = d3.select("svg");
 var width = +svg.attr("width");
@@ -23,27 +26,9 @@ var projection = d3.geoMercator()
 var data        = d3.map();
 var regionData  = d3.map();
 
-function update(){
-  if(selectedRegion == "Total"){
-    d3.queue().defer(d3.json, "https://raw.githubusercontent.com/johan/world.geo.json/master/countries.geo.json")
-    .defer(d3.csv,  "/DataParse/arrivals.csv", function(d) { 
-      data.set(d.Country, [d.y1995,d.y1996,d.y1997,d.y1998,d.y1999,d.y2000,d.y2001,d.y2002,d.y2003,d.y2004,d.y2005,d.y2006,d.y2007,d.y2008,d.y2009,d.y2010,d.y2011,d.y2012,d.y2013,d.y2014,d.y2015,d.y2016,d.y2017,d.y2018,d.y2019]); 
-    })
-    .await(ready);
-  }
-  else{
-    d3.queue().defer(d3.json, "https://raw.githubusercontent.com/johan/world.geo.json/master/countries.geo.json")
-    .defer(d3.csv,  "/DataParse/Regions.csv", function(d) {
-      if(selectedRegion == d.RegionOfOrigin){
-        var years = [d.y1995,d.y1996,d.y1997,d.y1998,d.y1999,d.y2000,d.y2001,d.y2002,d.y2003,d.y2004,d.y2005,d.y2006,d.y2007,d.y2008,d.y2009,d.y2010,d.y2011,d.y2012,d.y2013,d.y2014,d.y2015,d.y2016,d.y2017,d.y2018,d.y2019]
-        data.set(d.Country, years);
-      }})
-    .await(ready)
-  }
-}
-
-
 // Zoom & Pan
+// --------------------------------------------------------------------------
+
 var svg = d3.select("#map-container")
  .append("svg")
  .attr('id', 'map')
@@ -62,6 +47,10 @@ buttons.on('change', function(d) {
   update();
 });
 
+
+
+// GRADIENT BUSINESS
+// --------------------------------------------------------------------------
 colorsPerRegion= [
   {"region":"Total","colors":[	"#bedaf7","#7ab3ef","#368ce7","#1666ba","#0000FF"]},
   {"region":"Africa","colors":[	"#E1F2A2","#9ee98b","#84BF04","#3B7302","#154001"]},
@@ -73,8 +62,6 @@ colorsPerRegion= [
   {"region":"Other not classified"}
 ]
 
-
-/** GRADIENT BUSINESS */
 var somData = [0, 211998];
 var colors = [	"#bedaf7","#7ab3ef","#368ce7","#1666ba","#0000FF"];
 var colorRange = d3.range(0, 1, 1.0 / (colors.length - 1));
@@ -103,6 +90,8 @@ defs.append("linearGradient")
 	.attr("stop-color", function(d) { return d; });
 
 //Slider
+// --------------------------------------------------------------------------
+
 var dataTime = d3.range(0, 25).map(function(d) {
     return new Date(1995 + d, 10, 3);
   });
@@ -140,88 +129,142 @@ var dataTime = d3.range(0, 25).map(function(d) {
   gTime.call(sliderTime);
   d3.select('p#value-time').text(d3.timeFormat('%Y')(sliderTime.value()));
 
-function ready(error, topo) {
-  // Draw the map
-  svg.selectAll("g").remove();
-  d3.selectAll(".tooltip").remove();
   
+  //Barchart
+  // --------------------------------------------------------------------------
+  // set the dimensions and margins of the graph
+  var margin_bar = {top: 30, right: 30, bottom: 70, left: 60},
+  width_bar = 460 - margin.left - margin.right,
+  height_bar = 400 - margin.top - margin.bottom;
 
-  var tooltip = d3.select("body")
-    .append("div")
-    .attr("class","tooltip");
+  //Legend
+  // --------------------------------------------------------------------------
+  var height = 400;
+  var width = 60;
+  var padding = 10;
+  var innerHeight = height - 2*padding;
+  var barWidth = 8;
+  
+  var scale = d3.scale.linear()
+  .domain(d3.extent(somData))
+  .range([0, height]);
+  var yAxis = d3.axisRight(scale)
+  .tickSize(barWidth * 2) 
+  .ticks(4)
+  .tickFormat(x => 200000-x);
+  
+  var svgB = d3.select(".interface").append("svg").attr("width", width).attr("height", height);
+  var g = svgB.append("g").attr("transform", "translate(0," + padding + ")");
+  
+  var defs = svg.append("defs");
+  var linearGradient = defs.append("linearGradient").attr("id", "myGradient").attr("x1", "0%").attr("x2", "0%").attr("y1", "100%").attr("y2", "0%");
+  linearGradient.selectAll("stop")
+  .data(colors)
+  .enter().append("stop")
+  .attr("offset", function(d,i) { return i/(colors.length-1); })
+  .attr("stop-color", function(d) { return d; });
+  
+  g.append("rect")
+  .attr("height", innerHeight)
+  .attr("width", barWidth)
+  .style("fill", "url(#myGradient)");
+  
+  g.append("g")
+  .call(yAxis)
+  .select(".domain").remove()
 
-  d3.select(".tooltip").append("h4");
-  d3.select(".tooltip").append("p");
-
-  svg.append("g")
-    .selectAll("path")
-    .data(topo.features)
-    .enter()
-    .append("path")
-    // draw each country
-    .attr("d", d3.geoPath()
-    .projection(projection))
-    .attr("id", function(d){return d.properties.name.toUpperCase();})
-    .attr("value", function(d){return d.properties.name.toUpperCase();})
-      // set the color of each country
-      .attr("fill", function (d) {
-        if(data.get(d.properties.name.toUpperCase())){
+ 
+  function ready(error, topo) {
+    // Draw the map
+    svg.selectAll("g").remove();
+    d3.selectAll(".tooltip").remove();
+    
+  
+    var tooltip = d3.select("body")
+      .append("div")
+      .attr("class","tooltip");
+  
+    d3.select(".tooltip").append("h4");
+    d3.select(".tooltip").append("p");
+  
+    svg.append("g")
+      .selectAll("path")
+      .data(topo.features)
+      .enter()
+      .append("path")
+      // draw each country
+      .attr("d", d3.geoPath()
+      .projection(projection))
+      .attr("id", function(d){return d.properties.name.toUpperCase();})
+      .attr("value", function(d){return d.properties.name.toUpperCase();})
+        // set the color of each country
+        .attr("fill", function (d) {
+          if(data.get(d.properties.name.toUpperCase())){
+            
+            d.total = data.get(d.properties.name.toUpperCase())[currYear];
+            var color = d.total;
+            
+            if(color == "" || color =="..") {return "white"};
+            //console.log(color)
+            return colorScale(colorInterpolate(color)); 
+          }else{
+            // Country is missing from data
+            return "white";
+          }
+        })
+        .on('mouseover', function (d, i) {
           
-          d.total = data.get(d.properties.name.toUpperCase())[currYear];
-          var color = d.total;
-          
-          if(color == "" || color =="..") {return "white"};
-          //console.log(color)
-          return colorScale(colorInterpolate(color)); 
-        }else{
-          // Country is missing from data
-          return "white";
-        }
-      })
-      .on('mouseover', function (d, i) {
+          console.log(tooltip);
+          if(data.get(d.properties.name.toUpperCase())){
+            console.log("Arrivals: "+data.get(d.properties.name.toUpperCase())[currYear]+" "+ this.id);
+            var arrivals = data.get(d.properties.name.toUpperCase())[currYear];
+            arrivals = arrivals != "" ? arrivals+" Arr." :"Missing data";
+          }
+          d3.select(this).transition()
+              .duration('50')
+               .attr('opacity', '0.6');
+               tooltip.select("h4").text(this.id);
+               tooltip.select("p").text(arrivals);
+               return tooltip.style("visibility", "visible");
+        })
+        .on('mouseout', function (d, i) {
+          d3.select(this).transition()
+               .duration('50')
+               .attr('opacity', '1');
+               return tooltip.style("visibility", "hidden");
+        }).on('click', selected)
+        .on("mousemove", function(){
+          return tooltip.style("top", (d3.event.pageY-10)+"px").style("left",(d3.event.pageX+10)+"px");
+        });
         
-        console.log(tooltip);
-        if(data.get(d.properties.name.toUpperCase())){
-          console.log("Arrivals: "+data.get(d.properties.name.toUpperCase())[currYear]+" "+ this.id);
-          var arrivals = data.get(d.properties.name.toUpperCase())[currYear];
-          arrivals = arrivals != "" ? arrivals+" Arr." :"Missing data";
-        }
-        d3.select(this).transition()
-            .duration('50')
-             .attr('opacity', '0.6');
-             tooltip.select("h4").text(this.id);
-             tooltip.select("p").text(arrivals);
-             return tooltip.style("visibility", "visible");
+  }
+  
+  function update(){
+    if(selectedRegion == "Total"){
+      d3.queue().defer(d3.json, "https://raw.githubusercontent.com/johan/world.geo.json/master/countries.geo.json")
+      .defer(d3.csv,  "/DataParse/arrivals.csv", function(d) { 
+        data.set(d.Country, [d.y1995,d.y1996,d.y1997,d.y1998,d.y1999,d.y2000,d.y2001,d.y2002,d.y2003,d.y2004,d.y2005,d.y2006,d.y2007,d.y2008,d.y2009,d.y2010,d.y2011,d.y2012,d.y2013,d.y2014,d.y2015,d.y2016,d.y2017,d.y2018,d.y2019]); 
       })
-      .on('mouseout', function (d, i) {
-        d3.select(this).transition()
-             .duration('50')
-             .attr('opacity', '1');
-             return tooltip.style("visibility", "hidden");
-      }).on('click', selected)
-      .on("mousemove", function(){
-        return tooltip.style("top", (d3.event.pageY-10)+"px").style("left",(d3.event.pageX+10)+"px");
-      });
-      
-}
-
-
-
-function selected() {
-  d3.select('.selected').classed('selected', false);
-  currentCountry=this.id;
-  bar(currentCountry);
-  console.log(currentCountry);
-  d3.select(this).classed('selected', true);
-}
-
-//Barchart
-// set the dimensions and margins of the graph
-var margin_bar = {top: 30, right: 30, bottom: 70, left: 60},
-width_bar = 460 - margin.left - margin.right,
-height_bar = 400 - margin.top - margin.bottom;
-          
-
+      .await(ready);
+    }
+    else{
+      d3.queue().defer(d3.json, "https://raw.githubusercontent.com/johan/world.geo.json/master/countries.geo.json")
+      .defer(d3.csv,  "/DataParse/Regions.csv", function(d) {
+        if(selectedRegion == d.RegionOfOrigin){
+          var years = [d.y1995,d.y1996,d.y1997,d.y1998,d.y1999,d.y2000,d.y2001,d.y2002,d.y2003,d.y2004,d.y2005,d.y2006,d.y2007,d.y2008,d.y2009,d.y2010,d.y2011,d.y2012,d.y2013,d.y2014,d.y2015,d.y2016,d.y2017,d.y2018,d.y2019]
+          data.set(d.Country, years);
+        }})
+      .await(ready)
+    }
+  }
+  
+  function selected() {
+    d3.select('.selected').classed('selected', false);
+    currentCountry=this.id;
+    bar(currentCountry);
+    console.log(currentCountry);
+    d3.select(this).classed('selected', true);
+  }
 //Draw the bar and parse the data
  function bar(country){
 
@@ -334,39 +377,3 @@ svgA.append("text")
 
     })
 }
-
-//Legend
-
-var height = 400;
-var width = 60;
-var padding = 10;
-var innerHeight = height - 2*padding;
-var barWidth = 8;
-
-var scale = d3.scale.linear()
-    .domain(d3.extent(somData))
-    .range([0, height]);
-var yAxis = d3.axisRight(scale)
-    .tickSize(barWidth * 2) 
-    .ticks(4)
-    .tickFormat(x => 200000-x);
-
-var svgB = d3.select(".interface").append("svg").attr("width", width).attr("height", height);
-var g = svgB.append("g").attr("transform", "translate(0," + padding + ")");
-
-var defs = svg.append("defs");
-    var linearGradient = defs.append("linearGradient").attr("id", "myGradient").attr("x1", "0%").attr("x2", "0%").attr("y1", "100%").attr("y2", "0%");
-    linearGradient.selectAll("stop")
-        .data(colors)
-      .enter().append("stop")
-        .attr("offset", function(d,i) { return i/(colors.length-1); })
-        .attr("stop-color", function(d) { return d; });
-
-g.append("rect")
-  .attr("height", innerHeight)
-  .attr("width", barWidth)
-  .style("fill", "url(#myGradient)");
-
-g.append("g")
-  .call(yAxis)
-  .select(".domain").remove();
