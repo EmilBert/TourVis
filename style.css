@@ -136,11 +136,13 @@ input:checked + label {
   z-index: 10;
   color:black;
   visibility: hidden;
-  background:white;
+  background:white ;
   border-radius: 0.5rem;
   padding:0.5rem;  
   font-size: 0.6rem;
 }
+
+
 
 .tooltip h4{ 
     margin:0;

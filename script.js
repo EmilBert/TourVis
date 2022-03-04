@@ -31,16 +31,31 @@ colorMap = d3.map();
 colorsPerRegion= [
   {"region":"Total","colors":[	"#bedaf7","#7ab3ef","#368ce7","#1666ba","#0000FF"]},
   {"region":"Africa","colors":[	"#E1F2A2","#9ee98b","#84BF04","#3B7302","#154001"]},
-  {"region":"Americas","colors":[	"#bedaf7","#7ab3ef","#368ce7","#1666ba","#0000FF"]},
-  {"region":"East Asia and the pacific","colors":[	"#bedaf7","#7ab3ef","#368ce7","#1666ba","#0000FF"]},
-  {"region":"Europe","colors":[	"#bedaf7","#7ab3ef","#368ce7","#1666ba","#0000FF"]},
-  {"region":"Middle East","colors":[	"#bedaf7","#7ab3ef","#368ce7","#1666ba","#0000FF"]},
-  {"region":"South Asia","colors":[	"#bedaf7","#7ab3ef","#368ce7","#1666ba","#0000FF"]},
-  {"region":"Other not classified","colors":[	"#bedaf7","#7ab3ef","#368ce7","#1666ba","#0000FF"]}
+  {"region":"Americas","colors":[	"#94c7d6","#00B8E8","#05A4D1","#1D99B6","#015a6e"]},
+  {"region":"East Asia and the Pacific","colors":[	"#F25C69","#F23D3D","#BF0F0F","#8C0808","#590202"]},
+  {"region":"Europe","colors":[	"#E8D338","#DBC835","#C2B12F","#9C8E25","#5C5416"]},
+  {"region":"Middle East","colors":["#F2C53D","#F28E13","#D96907","#A63F03","#732002"]},
+  {"region":"South Asia","colors":[	"#97ED8A","#45BF55","#168039","#044D29","#00261C"]},
+  {"region":"Other not classified","colors":[	"#BEBEBE","#8E8D8B","#59595B","#404040","#0B0B0B"]}
+]
+
+maxMap = d3.map();
+maxAmountPerRegion= [
+  {"region":"Total","max":220000},
+  {"region":"Africa","max":8000},
+  {"region":"Americas","max":50000},
+  {"region":"East Asia and the Pacific","max":150000},
+  {"region":"Europe","max":90000},
+  {"region":"Middle East","max":12000},
+  {"region":"South Asia","max":5000},
+  {"region":"Other not classified","max":7100}
 ]
 
 for(let i = 0; i < colorsPerRegion.length; i++){
   colorMap.set(colorsPerRegion[i].region, colorsPerRegion[i].colors);
+}
+for(let i = 0; i < maxAmountPerRegion.length; i++){
+  maxMap.set(maxAmountPerRegion[i].region, maxAmountPerRegion[i].max);
 }
 
 
@@ -68,7 +83,10 @@ buttons.on('change', function(d) {
 
 // GRADIENT BUSINESS
 // --------------------------------------------------------------------------
-var somData = [0, 211998];
+
+var maxValue = maxMap.get("Total");
+
+var somData = [0, maxValue];
 var colors = [	"#bedaf7","#7ab3ef","#368ce7","#1666ba","#0000FF"];
 var colorRange = d3.range(0, 1, 1.0 / (colors.length - 1));
 colorRange.push(1);
@@ -86,14 +104,14 @@ var colorInterpolate = d3.scale.linear()
 
 //Calculate the gradient	
 defs.append("linearGradient")
-	.attr("id", "gradient-rainbow-colors")
-	.attr("x1", "0%").attr("y1", "0%")
-	.attr("x2", "100%").attr("y2", "0%")
-	.selectAll("stop") 
-	.data(colors)                  
-	.enter().append("stop") 
-	.attr("offset", function(d,i) { return i/(colors.length-1); })   
-	.attr("stop-color", function(d) { return d; });
+	  .attr("id", "gradient-rainbow-colors")
+    .attr("x1", "0%").attr("y1", "100%")
+	  .attr("x2", "0%").attr("y2", "0%")
+	  .selectAll("stop") 
+	  .data(colors)                  
+	  .enter().append("stop") 
+	  .attr("offset", function(d,i) { return i/(colors.length-1); })   
+	  .attr("stop-color", function(d) { return d; });
 
 //Slider
 // --------------------------------------------------------------------------
@@ -144,41 +162,11 @@ var dataTime = d3.range(0, 25).map(function(d) {
 
   //Legend
   // --------------------------------------------------------------------------
-  var height = 400;
-  var width = 60;
-  var padding = 10;
-  var innerHeight = height - 2*padding;
-  var barWidth = 8;
   
-  var scale = d3.scale.linear()
-  .domain(d3.extent(somData))
-  .range([0, height]);
-  var yAxis = d3.axisRight(scale)
-  .tickSize(barWidth * 2) 
-  .ticks(4)
-  .tickFormat(x => 200000-x);
   
-  var svgB = d3.select(".interface").append("svg").attr("width", width).attr("height", height);
-  var g = svgB.append("g").attr("transform", "translate(0," + padding + ")");
-  
-  var defs = svg.append("defs");
-  var linearGradient = defs.append("linearGradient").attr("id", "myGradient").attr("x1", "0%").attr("x2", "0%").attr("y1", "100%").attr("y2", "0%");
-  linearGradient.selectAll("stop")
-  .data(colors)
-  .enter().append("stop")
-  .attr("offset", function(d,i) { return i/(colors.length-1); })
-  .attr("stop-color", function(d) { return d; });
-  
-  g.append("rect")
-  .attr("height", innerHeight)
-  .attr("width", barWidth)
-  .style("fill", "url(#myGradient)");
-  
+    drawLegend();
 
-
-  g.append("g")
-  .call(yAxis)
-  .select(".domain").remove()
+ 
 
   function ready(error, topo) {
     // Draw the map
@@ -370,11 +358,12 @@ svgA.append("text")
     .attr("transform", "translate(" + x.bandwidth()/2 + ",-5)")
 })
 } 
-function updateGradientLegend(region)
+function updateGradientLegend()
 {
   defs.select(".linearGradient")
-  somData = [0, 211998];
-  colors = colorMap.get(region);
+  maxValue = maxMap.get(selectedRegion);
+  somData = [0, maxValue];
+  colors = colorMap.get(selectedRegion);
   colorRange = d3.range(0, 1, 1.0 / (colors.length - 1));
   colorRange.push(1);
 		   
@@ -385,23 +374,55 @@ function updateGradientLegend(region)
 	  .interpolate(d3.interpolateHcl);
 
   //Needed to map the values of the dataset to the color scale
-  var colorInterpolate = d3.scale.linear()
+  colorInterpolate = d3.scale.linear()
 	  .domain(d3.extent(somData))
 	  .range([0,1]);
 
+  defs.select("linearGradient").remove();
   //Calculate the gradient	
   defs.append("linearGradient")
 	  .attr("id", "gradient-rainbow-colors")
-    .attr("x1", "0%").attr("y1", "0%")
-	  .attr("x2", "100%").attr("y2", "0%")
+    .attr("x1", "0%").attr("y1", "100%")
+	  .attr("x2", "0%").attr("y2", "0%")
 	  .selectAll("stop") 
 	  .data(colors)                  
 	  .enter().append("stop") 
 	  .attr("offset", function(d,i) { return i/(colors.length-1); })   
 	  .attr("stop-color", function(d) { return d; });
+
+  d3.select('#map-legend').remove();
+  drawLegend();
 }
 
-function drawLegend(region)
+function drawLegend()
 {
+  var height = 400;
+  var width = 60;
+  var padding = 10;
+  var innerHeight = height - 2*padding;
+  var barWidth = 8;
   
+  var scale = d3.scale.linear()
+    .domain(d3.extent(somData))
+    .range([height, 0]);
+    
+  var yAxis = d3.axisRight(scale)
+    .tickSize(barWidth * 2) 
+    .ticks(4)
+    .tickFormat(x => x)
+    .tickValues( scale.ticks(5).concat(scale.domain()));
+  
+  var svgB = d3.select(".interface").append("svg").attr("width", width).attr("height", height).attr('id','map-legend');
+  var g = svgB.append("g").attr("transform", "translate(0," + padding + ")");
+  
+  var defs = svg.append("defs");
+  g.append("rect")
+    .attr("height", innerHeight)
+    .attr("width",  barWidth)
+    .style("fill", "url(#gradient-rainbow-colors)");
+    
+  g.append("g")
+    .call(yAxis)
+    .select(".domain").remove()
+    
 }
