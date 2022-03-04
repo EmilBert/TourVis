@@ -26,7 +26,22 @@ var projection = d3.geoMercator()
 var data        = d3.map();
 var regionData  = d3.map();
 
+// Gradient Colors
+colorMap = d3.map();
+colorsPerRegion= [
+  {"region":"Total","colors":[	"#bedaf7","#7ab3ef","#368ce7","#1666ba","#0000FF"]},
+  {"region":"Africa","colors":[	"#E1F2A2","#9ee98b","#84BF04","#3B7302","#154001"]},
+  {"region":"Americas","colors":[	"#bedaf7","#7ab3ef","#368ce7","#1666ba","#0000FF"]},
   {"region":"East Asia and the pacific","colors":[	"#bedaf7","#7ab3ef","#368ce7","#1666ba","#0000FF"]},
+  {"region":"Europe","colors":[	"#bedaf7","#7ab3ef","#368ce7","#1666ba","#0000FF"]},
+  {"region":"Middle East","colors":[	"#bedaf7","#7ab3ef","#368ce7","#1666ba","#0000FF"]},
+  {"region":"South Asia","colors":[	"#bedaf7","#7ab3ef","#368ce7","#1666ba","#0000FF"]},
+  {"region":"Other not classified","colors":[	"#bedaf7","#7ab3ef","#368ce7","#1666ba","#0000FF"]}
+]
+
+for(let i = 0; i < colorsPerRegion.length; i++){
+  colorMap.set(colorsPerRegion[i].region, colorsPerRegion[i].colors);
+}
 // Zoom & Pan
 // --------------------------------------------------------------------------
 
@@ -48,21 +63,8 @@ buttons.on('change', function(d) {
   update();
 });
 
-
-
 // GRADIENT BUSINESS
 // --------------------------------------------------------------------------
-colorsPerRegion= [
-  {"region":"Total","colors":[	"#bedaf7","#7ab3ef","#368ce7","#1666ba","#0000FF"]},
-  {"region":"Africa","colors":[	"#E1F2A2","#9ee98b","#84BF04","#3B7302","#154001"]},
-  {"region":"Americas"},
-  {"region":"East Asia and the pacific"},
-  {"region":"Europe"},
-  {"region":"Middle East"},
-  {"region":"South Asia"},
-  {"region":"Other not classified"}
-]
-
 var somData = [0, 211998];
 var colors = [	"#bedaf7","#7ab3ef","#368ce7","#1666ba","#0000FF"];
 var colorRange = d3.range(0, 1, 1.0 / (colors.length - 1));
@@ -111,7 +113,6 @@ var dataTime = d3.range(0, 25).map(function(d) {
     .on('onchange', val => {
       currYear=(Math.floor(val/step))-25;
       if(currYear != temp){
-        console.log("OnChange kallas")
         d3.select('p#value-time').text(d3.timeFormat('%Y')(val));
         update(currYear);
         bar(currentCountry);
@@ -206,7 +207,6 @@ var dataTime = d3.range(0, 25).map(function(d) {
             var color = d.total;
             
             if(color == "" || color =="..") {return "white"};
-            //console.log(color)
             return colorScale(colorInterpolate(color)); 
           }else{
             // Country is missing from data
@@ -214,10 +214,7 @@ var dataTime = d3.range(0, 25).map(function(d) {
           }
         })
         .on('mouseover', function (d, i) {
-          
-          console.log(tooltip);
           if(data.get(d.properties.name.toUpperCase())){
-            console.log("Arrivals: "+data.get(d.properties.name.toUpperCase())[currYear]+" "+ this.id);
             var arrivals = data.get(d.properties.name.toUpperCase())[currYear];
             arrivals = arrivals != "" ? arrivals+" Arr." :"Missing data";
           }
@@ -263,7 +260,6 @@ var dataTime = d3.range(0, 25).map(function(d) {
     d3.select('.selected').classed('selected', false);
     currentCountry=this.id;
     bar(currentCountry);
-    console.log(currentCountry);
     d3.select(this).classed('selected', true);
   }
 //Draw the bar and parse the data
@@ -272,11 +268,10 @@ var dataTime = d3.range(0, 25).map(function(d) {
   svgA.selectAll("g").remove();
   svgA.selectAll("rect").remove();
   svgA.selectAll("text").remove();
-  console.log("Bar saker tas bort")
+  
   // Parse the Data
-  d3.csv("/DataParse/Regions.csv", function(d) {
-    
-
+  d3.csv("/DataParse/Regions.csv", function(d) 
+  {
     let found = 0;
     for(let i=0; i < 1561 || found < 7;i++){
       if(country == d[i].Country){
@@ -284,14 +279,15 @@ var dataTime = d3.range(0, 25).map(function(d) {
         found++;
       }
     }
-
-    regionDataCurrent = [ parseFloat(regionData.get("Africa")[currYear]), 
-                          parseFloat(regionData.get("Americas")[currYear]),
-                          parseFloat(regionData.get("East Asia and the Pacific")[currYear]),
-                          parseFloat(regionData.get("Europe")[currYear]),
-                          parseFloat(regionData.get("Middle East")[currYear]),
-                          parseFloat(regionData.get("South Asia")[currYear]),
-                          parseFloat(regionData.get("Other not classified")[currYear])];
+    regionDataCurrent = [ 
+      parseFloat(regionData.get("Africa")[currYear]), 
+      parseFloat(regionData.get("Americas")[currYear]),
+      parseFloat(regionData.get("East Asia and the Pacific")[currYear]),
+      parseFloat(regionData.get("Europe")[currYear]),
+      parseFloat(regionData.get("Middle East")[currYear]),
+      parseFloat(regionData.get("South Asia")[currYear]),
+      parseFloat(regionData.get("Other not classified")[currYear])
+    ];
 //Make all nan=0 for display
 var counter = 0;
 for (i=0; i<7; i++){
@@ -299,16 +295,12 @@ for (i=0; i<7; i++){
     regionDataCurrent[i]=0;
     counter++  
 }
-if (counter == 7){
+  if (counter == 7){
   var ancm = "missing data";
-} else var ancm = "";
+  } else var ancm = "";
 }
 
-
 var max = Math.max(...regionDataCurrent);
-console.log(max);
-console.log(regionDataCurrent)
-
 
 const data1 = [
   {region: 'Africa', value: regionDataCurrent[0]},
@@ -319,65 +311,88 @@ const data1 = [
   {region: 'South Asia', value: regionDataCurrent[5]},
   {region: 'Other not classified', value: regionDataCurrent[6]}
 ];
-
-
 svgA.append("text")
 .attr("text-anchor", "start")
 .attr("x", 0)
 .attr("y", -20)
 .text(country);
 
-svgA.append("text")
-.attr("text-anchor", "end")
-.attr("x", 200)
-.attr("y", -20)
-.text(ancm);
+  svgA.append("text")
+    .attr("text-anchor", "end")
+    .attr("x", 200)
+    .attr("y", -20)
+    .text(ancm);
 
+  // X axis
+  var x = d3.scaleBand()
+  .range([ 0, width_bar ])
+  .domain(data1.map(function(data1){return data1.region}))
+  .padding(0.2);
+  
+  svgA.append("g")
+    .attr("transform", "translate(0," + height_bar + ")")
+    .call(d3.axisBottom(x))
+    .selectAll("text")
+    .attr("transform", "translate(-10,0)rotate(-45)")
+    .style("text-anchor", "end");
+  
+  // Add Y axis
+  var y = d3.scaleLinear()
+    .domain([0, max])
+    .range([ height_bar, 0]);
+    svgA.append("g").call(d3.axisLeft(y));
+  // Bars
+  svgA.selectAll("mybar")
+    .data(data1)
+    .enter()
+    .append("rect")
+    .attr("x", function(data1) {return x(data1.region)}) 
+    .attr("y", function(data1) {return y(data1.value)})
+    .attr("width", x.bandwidth())
+    .attr("height", function(data1){return height_bar - y(data1.value);})
+    .attr("fill", "#69b3a2")
+  svgA.selectAll(".bartext")
+    .data(data1)
+    .enter()
+    .append("text")
+    .classed('bartext', true)
+    .attr("x", function(data1) {return x(data1.region)}) 
+    .attr("y", function(data1) {return y(data1.value)})
+    .attr("width", x.bandwidth())
+    .attr("height", function(data1){return height_bar - y(data1.value);})
+    .text(function(data1) {return (data1.value)})
+    .style("width", x.bandwidth())
+    .attr("text-anchor", "middle")
+    .attr("transform", "translate(" + x.bandwidth()/2 + ",0)")
+})
+} 
+function updateGradientLegend(region)
+{
+  var somData = [0, 211998];
+  var colors = colorMap.get(region);
 
-    // X axis
-    var x = d3.scaleBand()
-    .range([ 0, width_bar ])
-    .domain(data1.map(function(data1){return data1.region}))
-    .padding(0.2);
-    
-    svgA.append("g")
-      .attr("transform", "translate(0," + height_bar + ")")
-      .call(d3.axisBottom(x))
-      .selectAll("text")
-        .attr("transform", "translate(-10,0)rotate(-45)")
-        .style("text-anchor", "end");
-    
-    // Add Y axis
-    var y = d3.scaleLinear()
-      .domain([0, max])
-      .range([ height_bar, 0]);
-      svgA.append("g").call(d3.axisLeft(y));
+  var colorRange = d3.range(0, 1, 1.0 / (colors.length - 1));
+  colorRange.push(1);
+		   
+  //Create color gradient
+  var colorScale = d3.scale.linear()
+	.domain(colorRange)
+	.range(colors)
+	.interpolate(d3.interpolateHcl);
 
-    // Bars
-    svgA.selectAll("mybar")
-      .data(data1)
-      .enter()
-      .append("rect")
-      .attr("x", function(data1) {return x(data1.region)}) 
-      .attr("y", function(data1) {return y(data1.value)})
-      .attr("width", x.bandwidth())
-      .attr("height", function(data1){return height_bar - y(data1.value);})
-      .attr("fill", "#69b3a2")
+  //Needed to map the values of the dataset to the color scale
+  var colorInterpolate = d3.scale.linear()
+	.domain(d3.extent(somData))
+	.range([0,1]);
 
-      svgA.selectAll(".bartext")
-      .data(data1)
-      .enter()
-      .append("text")
-      .classed('bartext', true)
-      .attr("x", function(data1) {return x(data1.region)}) 
-      .attr("y", function(data1) {return y(data1.value)})
-      .attr("width", x.bandwidth())
-      .attr("height", function(data1){return height_bar - y(data1.value);})
-      .text(function(data1) {return (data1.value)})
-      .style("width", x.bandwidth())
-      .attr("text-anchor", "middle")
-      .attr("transform", "translate(" + x.bandwidth()/2 + ",0)")
-
-
-    })
+  //Calculate the gradient	
+  defs.append("linearGradient")
+	.attr("id", "gradient-rainbow-colors")
+  .attr("x1", "0%").attr("y1", "0%")
+	.attr("x2", "100%").attr("y2", "0%")
+	.selectAll("stop") 
+	.data(colors)                  
+	.enter().append("stop") 
+	.attr("offset", function(d,i) { return i/(colors.length-1); })   
+	.attr("stop-color", function(d) { return d; });
 }

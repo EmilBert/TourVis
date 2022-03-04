@@ -136,10 +136,10 @@ input:checked + label {
   z-index: 10;
   color:black;
   visibility: hidden;
-  background:white #9ee98b;
+  background:white;
   border-radius: 0.5rem;
   padding:0.5rem;  
-  font-size: 0.8rem;
+  font-size: 0.6rem;
 }
 
 .tooltip h4{ 
@@ -152,11 +152,6 @@ input:checked + label {
 
 rect{
     transition: all 0.1s ease-in-out;
-}
-
-text.bartext{
-    position: relative;
-    padding:0.5rem;
 }
 
 .domain{
