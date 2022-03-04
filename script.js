@@ -201,7 +201,7 @@ var dataTime = d3.range(0, 25).map(function(d) {
         .on('mouseover', function (d, i) {
           if(data.get(d.properties.name.toUpperCase())){
             var arrivals = data.get(d.properties.name.toUpperCase())[currYear];
-            arrivals = arrivals != "" ? arrivals+" Arr." :"Missing data";
+            arrivals = arrivals != "" ? arrivals+"K Arr." :"Missing data";
           }
           d3.select(this).transition()
               .duration('50')
