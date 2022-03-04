@@ -31,15 +31,15 @@ colorMap = d3.map();
 colorsPerRegion= [
   {"region":"Total","colors":[	"#bedaf7","#7ab3ef","#368ce7","#1666ba","#0000FF"]},
   {"region":"Africa","colors":[	"#E1F2A2","#9ee98b","#84BF04","#3B7302","#154001"]},
-  {"region":"Americas","colors":[	"#94c7d6","#00B8E8","#05A4D1","#1D99B6","#015a6e"]},
-  {"region":"East Asia and the Pacific","colors":[	"#F25C69","#F23D3D","#BF0F0F","#8C0808","#590202"]},
-  {"region":"Europe","colors":[	"#E8D338","#DBC835","#C2B12F","#9C8E25","#5C5416"]},
+  {"region":"Americas","colors":[	"#CFEFEB","#8FCDD6","#4F89AD","#284D85","#19276e"]},
+  {"region":"East Asia and the Pacific","colors":["#eb9eac","#BC0017","#9B000A","#6B0002","#420303"]},
+  {"region":"Europe","colors":[	"#D9C2A7","#DBA775","#A6754B","#733E10","#401E01"]},
   {"region":"Middle East","colors":["#F2C53D","#F28E13","#D96907","#A63F03","#732002"]},
   {"region":"South Asia","colors":[	"#97ED8A","#45BF55","#168039","#044D29","#00261C"]},
   {"region":"Other not classified","colors":[	"#BEBEBE","#8E8D8B","#59595B","#404040","#0B0B0B"]}
 ]
-
 maxMap = d3.map();
+
 maxAmountPerRegion= [
   {"region":"Total","max":220000},
   {"region":"Africa","max":8000},
@@ -85,9 +85,8 @@ buttons.on('change', function(d) {
 // --------------------------------------------------------------------------
 
 var maxValue = maxMap.get("Total");
-
 var somData = [0, maxValue];
-var colors = [	"#bedaf7","#7ab3ef","#368ce7","#1666ba","#0000FF"];
+var colors = colorMap.get("Total")
 var colorRange = d3.range(0, 1, 1.0 / (colors.length - 1));
 colorRange.push(1);
 		   
@@ -162,11 +161,7 @@ var dataTime = d3.range(0, 25).map(function(d) {
 
   //Legend
   // --------------------------------------------------------------------------
-  
-  
-    drawLegend();
-
- 
+  drawLegend();
 
   function ready(error, topo) {
     // Draw the map
@@ -191,13 +186,11 @@ var dataTime = d3.range(0, 25).map(function(d) {
       .projection(projection))
       .attr("id", function(d){return d.properties.name.toUpperCase();})
       .attr("value", function(d){return d.properties.name.toUpperCase();})
-        // set the color of each country
-        .attr("fill", function (d) {
+      // set the color of each country
+      .attr("fill", function (d) {
           if(data.get(d.properties.name.toUpperCase())){
-            
             d.total = data.get(d.properties.name.toUpperCase())[currYear];
             var color = d.total;
-            
             if(color == "" || color =="..") {return "white"};
             return colorScale(colorInterpolate(color)); 
           }else{

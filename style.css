@@ -26,34 +26,34 @@ body {
 .inputs input{display:none}
 
 #total{
-    background: rgb(140, 190, 207);
+    background: #1666ba;
 }
 #africa{
-    background: rgb(21, 109, 21);
+    background: #3B7302;
     
 }
 #americas{
-    background: rgb(51, 96, 192);
+    background: #284D85;
    
 }
 #east-asia{
-    background: rgb(146, 48, 48);
+    background: #6B0002 ;
     
 }
 #europe{
-    background: rgb(159, 170, 0);
+    background: #9C8E25;
   
 }
 #middle-east{
-    background: rgb(107, 87, 21);
+    background: #A63F03;
     
 }
 #south-asia{
-    background: rgb(57, 119, 57);
+    background: #044D29;
   
 }
 #other{
-    background: rgb(102, 100, 100);
+    background: #404040;
     
 }
 input:checked + label {
@@ -93,9 +93,9 @@ input:checked + label {
 
 .interface svg text{
     font-size: 12px;
-    fill:white;
+    fill:white  ;
+    
 }
-
 .interface{
     margin:1rem;
     border-radius: 1rem;
@@ -108,14 +108,14 @@ input:checked + label {
     overflow:visible;
 }
 
-.map path{
+#map path{
     transition: all 0.05s ease-in-out;
-    stroke: rgb(0,0,0,0.1);
-    stroke-width: 0.1px;
 }
 
 .selected{
   fill:#69b3a2;
+  stroke: white;
+  stroke-width: 0.8px;
 }
 
 #d3-container{
@@ -141,8 +141,6 @@ input:checked + label {
   padding:0.5rem;  
   font-size: 0.6rem;
 }
-
-
 
 .tooltip h4{ 
     margin:0;
