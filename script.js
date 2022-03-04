@@ -42,6 +42,8 @@ colorsPerRegion= [
 for(let i = 0; i < colorsPerRegion.length; i++){
   colorMap.set(colorsPerRegion[i].region, colorsPerRegion[i].colors);
 }
+
+
 // Zoom & Pan
 // --------------------------------------------------------------------------
 
@@ -60,6 +62,7 @@ update();
 const buttons = d3.selectAll('input');
 buttons.on('change', function(d) {
   selectedRegion = this.value;
+  updateGradientLegend(selectedRegion);
   update();
 });
 
@@ -171,11 +174,12 @@ var dataTime = d3.range(0, 25).map(function(d) {
   .attr("width", barWidth)
   .style("fill", "url(#myGradient)");
   
+
+
   g.append("g")
   .call(yAxis)
   .select(".domain").remove()
 
- 
   function ready(error, topo) {
     // Draw the map
     svg.selectAll("g").remove();
@@ -252,7 +256,7 @@ var dataTime = d3.range(0, 25).map(function(d) {
           var years = [d.y1995,d.y1996,d.y1997,d.y1998,d.y1999,d.y2000,d.y2001,d.y2002,d.y2003,d.y2004,d.y2005,d.y2006,d.y2007,d.y2008,d.y2009,d.y2010,d.y2011,d.y2012,d.y2013,d.y2014,d.y2015,d.y2016,d.y2017,d.y2018,d.y2019]
           data.set(d.Country, years);
         }})
-      .await(ready)
+        .await(ready)
     }
   }
   
@@ -368,31 +372,36 @@ svgA.append("text")
 } 
 function updateGradientLegend(region)
 {
-  var somData = [0, 211998];
-  var colors = colorMap.get(region);
-
-  var colorRange = d3.range(0, 1, 1.0 / (colors.length - 1));
+  defs.select(".linearGradient")
+  somData = [0, 211998];
+  colors = colorMap.get(region);
+  colorRange = d3.range(0, 1, 1.0 / (colors.length - 1));
   colorRange.push(1);
 		   
   //Create color gradient
-  var colorScale = d3.scale.linear()
-	.domain(colorRange)
-	.range(colors)
-	.interpolate(d3.interpolateHcl);
+  colorScale = d3.scale.linear()
+	  .domain(colorRange)
+	  .range(colors)
+	  .interpolate(d3.interpolateHcl);
 
   //Needed to map the values of the dataset to the color scale
   var colorInterpolate = d3.scale.linear()
-	.domain(d3.extent(somData))
-	.range([0,1]);
+	  .domain(d3.extent(somData))
+	  .range([0,1]);
 
   //Calculate the gradient	
   defs.append("linearGradient")
-	.attr("id", "gradient-rainbow-colors")
-  .attr("x1", "0%").attr("y1", "0%")
-	.attr("x2", "100%").attr("y2", "0%")
-	.selectAll("stop") 
-	.data(colors)                  
-	.enter().append("stop") 
-	.attr("offset", function(d,i) { return i/(colors.length-1); })   
-	.attr("stop-color", function(d) { return d; });
+	  .attr("id", "gradient-rainbow-colors")
+    .attr("x1", "0%").attr("y1", "0%")
+	  .attr("x2", "100%").attr("y2", "0%")
+	  .selectAll("stop") 
+	  .data(colors)                  
+	  .enter().append("stop") 
+	  .attr("offset", function(d,i) { return i/(colors.length-1); })   
+	  .attr("stop-color", function(d) { return d; });
+}
+
+function drawLegend(region)
+{
+  
 }
