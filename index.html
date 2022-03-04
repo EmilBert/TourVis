@@ -42,12 +42,19 @@
         <input id="7" type="radio" name="region" value="South Asia"><label  for="7" id="south-asia" >South Asia</label><br>
         <input id="8" type="radio" name="region" value="Other not classified"><label for="8" id="other">Other not classified</label><br> 
       </div>
-
+      
+      <span id="disclaimer">*Note all values are given in thousands, i.e 100 => 100,000</span>
       <div class="interface">
         <div id="d3-container"></div>
-        <div id="map-container">
+        <div id="map-container"></div>
+        <div id="legend-container">
+          <div id="missing">
+            <div class="square"></div>
+            <p>No Data</p>
+          </div>
         </div>
       </div>
+      
       
       <div class="slider">
         <div id="slider-time"><div class="slider-text">

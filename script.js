@@ -201,7 +201,7 @@ var dataTime = d3.range(0, 25).map(function(d) {
         .on('mouseover', function (d, i) {
           if(data.get(d.properties.name.toUpperCase())){
             var arrivals = data.get(d.properties.name.toUpperCase())[currYear];
-            arrivals = arrivals != "" ? arrivals+"K Arr." :"Missing data";
+            arrivals = arrivals != "" ? arrivals+" Arr." :"Missing data";
           }
           d3.select(this).transition()
               .duration('50')
@@ -390,7 +390,7 @@ function updateGradientLegend()
 function drawLegend()
 {
   var height = 400;
-  var width = 60;
+  var width = 70;
   var padding = 10;
   var innerHeight = height - 2*padding;
   var barWidth = 8;
@@ -405,15 +405,17 @@ function drawLegend()
     .tickFormat(x => x)
     .tickValues( scale.ticks(5).concat(scale.domain()));
   
-  var svgB = d3.select(".interface").append("svg").attr("width", width).attr("height", height).attr('id','map-legend');
-  var g = svgB.append("g").attr("transform", "translate(0," + padding + ")");
+  var svgB  = d3.select("#legend-container").append("svg").attr("width", width).attr("height", height).attr('id','map-legend');
+  var g     = svgB.append("g").attr("transform", "translate(0," + padding + ")");
   
-  var defs = svg.append("defs");
+  
+
+
   g.append("rect")
     .attr("height", innerHeight)
     .attr("width",  barWidth)
     .style("fill", "url(#gradient-rainbow-colors)");
-    
+
   g.append("g")
     .call(yAxis)
     .select(".domain").remove()
