@@ -108,7 +108,7 @@ input:checked + label {
     overflow:visible;
 }
 
-path{
+.map path{
     transition: all 0.05s ease-in-out;
     stroke: rgb(0,0,0,0.1);
     stroke-width: 0.1px;
@@ -136,7 +136,7 @@ path{
   z-index: 10;
   color:black;
   visibility: hidden;
-  background:white;
+  background:white #9ee98b;
   border-radius: 0.5rem;
   padding:0.5rem;  
   font-size: 0.8rem;
@@ -157,4 +157,8 @@ rect{
 text.bartext{
     position: relative;
     padding:0.5rem;
+}
+
+.domain{
+    border-left: 2px black solid;
 }

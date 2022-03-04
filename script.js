@@ -26,6 +26,7 @@ var projection = d3.geoMercator()
 var data        = d3.map();
 var regionData  = d3.map();
 
+  {"region":"East Asia and the pacific","colors":[	"#bedaf7","#7ab3ef","#368ce7","#1666ba","#0000FF"]},
 // Zoom & Pan
 // --------------------------------------------------------------------------
 
