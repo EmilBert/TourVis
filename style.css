@@ -159,3 +159,15 @@ rect{
 .domain{
     border-left: 2px black solid;
 }
+
+#info{
+    opacity: 0.0;
+    display: "none";
+    position: static;
+    left: 10px;
+}
+
+#header{
+    position: static;
+    text-align: center;
+}
