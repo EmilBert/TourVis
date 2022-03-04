@@ -199,6 +199,7 @@ function selected() {
   d3.select('.selected').classed('selected', false);
   currentCountry=this.id;
   bar(currentCountry);
+  console.log(currentCountry);
   d3.select(this).classed('selected', true);
 }
 
@@ -236,11 +237,18 @@ height_bar = 400 - margin.top - margin.bottom;
                           parseFloat(regionData.get("South Asia")[currYear]),
                           parseFloat(regionData.get("Other not classified")[currYear])];
 //Make all nan=0 for display
+var counter = 0;
 for (i=0; i<7; i++){
   if (Number.isNaN(regionDataCurrent[i])){
     regionDataCurrent[i]=0;
-  }
+    counter++  
 }
+if (counter == 7){
+  var ancm = "missing data";
+} else var ancm = "";
+}
+
+
 var max = Math.max(...regionDataCurrent);
 console.log(max);
 console.log(regionDataCurrent)
@@ -262,6 +270,12 @@ svgA.append("text")
 .attr("x", 0)
 .attr("y", -20)
 .text(country);
+
+svgA.append("text")
+.attr("text-anchor", "end")
+.attr("x", 200)
+.attr("y", -20)
+.text(ancm);
 
 
     // X axis
@@ -305,7 +319,7 @@ svgA.append("text")
       .attr("height", function(data1){return height_bar - y(data1.value);})
       .text(function(data1) {return (data1.value)})
       .style("width", x.bandwidth());
-      
+
     })
 }
 
