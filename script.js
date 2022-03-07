@@ -201,7 +201,8 @@ var dataTime = d3.range(0, 25).map(function(d) {
         .on('mouseover', function (d, i) {
           if(data.get(d.properties.name.toUpperCase())){
             var arrivals = data.get(d.properties.name.toUpperCase())[currYear];
-            arrivals = arrivals != "" ? arrivals+" Arr." :"Missing data";
+            if(arrivals == "" || arrivals =="..") {arrivals =  "Missing data"} 
+            else{ arrivals = arrivals + " Arr."};
           }
           d3.select(this).transition()
               .duration('50')
@@ -250,9 +251,7 @@ var dataTime = d3.range(0, 25).map(function(d) {
 //Draw the bar and parse the data
  function bar(country){
 
-  svgA.selectAll("g").remove();
-  svgA.selectAll("rect").remove();
-  svgA.selectAll("text").remove();
+  
   
   // Parse the Data
   d3.csv("/DataParse/Regions.csv", function(d) 
@@ -273,16 +272,21 @@ var dataTime = d3.range(0, 25).map(function(d) {
       parseFloat(regionData.get("South Asia")[currYear]),
       parseFloat(regionData.get("Other not classified")[currYear])
     ];
-//Make all nan=0 for display
-var counter = 0;
-for (i=0; i<7; i++){
-  if (Number.isNaN(regionDataCurrent[i])){
-    regionDataCurrent[i]=0;
-    counter++  
-}
-  if (counter == 7){
+    //Make all nan=0 for display
+    var counter = 0;
+    for (i=0; i<7; i++){
+      if (Number.isNaN(regionDataCurrent[i])){
+        regionDataCurrent[i]=0;
+        counter++  
+      }
+      if (counter == 7){
   var ancm = "missing data";
   } else var ancm = "";
+
+  svgA.selectAll("g").remove();
+  svgA.selectAll("text").remove();
+  svgA.selectAll("rect").remove();
+
 }
 
 var max = Math.max(...regionDataCurrent);

@@ -25,6 +25,13 @@ body {
 
 .inputs input{display:none}
 
+.toggle{
+    color:white;
+    padding:1rem;
+    background: none;
+    border:none;
+}
+
 #total{
     background: #1666ba;
 }
@@ -95,7 +102,7 @@ input:checked + label {
 .interface{
     padding:3rem 1rem 3rem 1rem;
     margin:1rem;
-    border-radius: 1rem;
+    border-radius: 3px;
     background: #1a2e50;
     width:fit-content;
     margin:auto;
@@ -146,43 +153,33 @@ input:checked + label {
 .tooltip p{ 
     margin:0;
 }
-
 rect{
     transition: all 0.1s ease-in-out;
 }
-
 #disclaimer{
     position:absolute;
     padding:1rem;
     font-size: 0.8rem;
     color:lightsteelblue;
 }
-
 .domain{
     border-left: 2px black solid;
 }
-
-#info{
-    opacity: 0.0;
-    display: "none";
-    position: static;
+#info{   
     left: 10px;
 }
 
 #legend-container{
     display:flex;
+    color:white;
     flex-direction:column-reverse;
-
 }
-
 #header{
     position: static;
-    text-align: center;
 }
 #missing{
     display:flex;
     color:white;
-    
 }
 #missing p{
     padding:0;
@@ -191,7 +188,6 @@ rect{
     margin-left:4px;
 }
 .square{
-    border: 1px black solid;
     width:8px;
     height:8px;
     background-color: white;

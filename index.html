@@ -18,18 +18,18 @@
   </head>
   <body>
     <div class="wrapper">
-    <h1 id="header">TourVis</h1>
-    <button onclick="toggleText()">How to use</button>
-    <p id="info">The default heatmap shows which countries people worldwide travel to. A more intense color means more travellers. Selecting a region from the buttons shows where people from that specific region travel to in the world. Selecting a country shows a barplot that specifies the origin of the travellers to that selected country. The slider at the bottom is used to change the year, which updates the visualization</p>
+    <h1 id="header">🌎 TourVis <button onclick="toggleText()" class="toggle">ℹ️</button></h1>
+    <p id="info"></p>
     <script>
-    function toggleText(){
+    function toggleText()
+    {
       var x = document.getElementById("info");
-      if (x.style.opacity == 0.0) {
-        x.style.opacity = 0.8;
+      if (x.innerHTML === "") {
+        x.innerHTML = "The default heatmap shows which countries people worldwide travel to. A more intense color means more travellers. Selecting a region from the buttons shows where people from that specific region travel to in the world. Selecting a country shows a barplot that specifies the origin of the travellers to that selected country. The slider at the bottom is used to change the year, which updates the visualization";
       } else {
-      x.style.opacity = 0.0;
+        x.innerHTML = "";
       }
-      }
+    }
     </script>
 
       <div class="inputs">
