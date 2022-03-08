@@ -11,8 +11,15 @@ body {
     margin:0.5rem 0;
 }
 
+h1{
+    font-size: 3rem;
+    color:rgb(49, 49, 49);
+    margin-bottom:1rem;
+    border-bottom:solid 1px #1a2e50;
+}
+
 .inputs label{
-    border-radius: 0.3rem;
+    border-radius: 3px;
     padding:0.3rem;
     font-size: 0.5rem;
     color:#dadada;
@@ -27,8 +34,9 @@ body {
 
 .toggle{
     color:white;
-    padding:1rem;
-    background: none;
+    background-color: black;
+    border-radius: 3px;
+    padding:0.4rem;
     border:none;
 }
 
@@ -70,9 +78,9 @@ input:checked + label {
 }
 
 .wrapper{
-    padding:2rem;
+    padding:0;
     width:100%;
-    max-width:1000px;
+    max-width:1200px;
     margin:auto;
 }
 .slider{
@@ -100,12 +108,12 @@ input:checked + label {
     
 }
 .interface{
-    padding:3rem 1rem 3rem 1rem;
-    margin:1rem;
+    padding:3rem 0;
     border-radius: 3px;
     background: #1a2e50;
-    width:fit-content;
-    margin:auto;
+    width:100%;
+    margin:0;
+    
     display:flex;
     justify-content:center;
     flex-direction: row-reverse;
@@ -126,9 +134,12 @@ input:checked + label {
     overflow:visible;
 }
 #map-container{
+    box-shadow: inset 0px 0px 50px 26px rgba(0,0,0,0.1);
     margin: 0 2rem;
     width:28rem;
+    background-color: rgba(255, 255, 255, 0.055);
     border:solid 1px white;  
+    border-radius: 3px;
 }
 
 #d3-container svg{
@@ -141,7 +152,7 @@ input:checked + label {
   color:black;
   visibility: hidden;
   background:white ;
-  border-radius: 0.5rem;
+  border-radius: 3px;
   padding:0.5rem;  
   font-size: 0.6rem;
 }
