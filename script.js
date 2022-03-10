@@ -6,15 +6,21 @@ var svg = d3.select("svg");
 var width = +svg.attr("width");
 var height = width*0.8;
 
+// Default values
 var currYear = 9;
 var currentCountry = 'SWEDEN';
-
 var selectedRegion = "Total";
 var selectedCountry = "";
-const zoom = d3.zoom();
-//Append a defs (for definition) element to your SVG
+
+// Barchart
+// set the dimensions and margins of the graph
+var margin_bar = {top: 30, right: 30, bottom: 70, left: 60},
+width_bar = 460 - margin.left - margin.right,
+height_bar = 400 - margin.top - margin.bottom;
+
 
 var defs = svg.append("defs");
+
 // Map and projection
 var path = d3.geoPath();
 var projection = d3.geoMercator()
@@ -22,12 +28,13 @@ var projection = d3.geoMercator()
 .center([0,20])
 .translate([width / 2, height / 2]);
 
-// Data
+// Data maps
 var data        = d3.map();
 var regionData  = d3.map();
+var colorMap    = d3.map();
+var maxMap      = d3.map();
 
 // Gradient Colors
-colorMap = d3.map();
 colorsPerRegion= [
   {"region":"Total","colors":[	"#bedaf7","#7ab3ef","#368ce7","#1666ba","#0000FF"]},
   {"region":"Africa","colors":[	"#E1F2A2","#9ee98b","#84BF04","#3B7302","#154001"]},
@@ -38,8 +45,6 @@ colorsPerRegion= [
   {"region":"South Asia","colors":[	"#97ED8A","#45BF55","#168039","#044D29","#00261C"]},
   {"region":"Other not classified","colors":[	"#BEBEBE","#8E8D8B","#59595B","#404040","#0B0B0B"]}
 ]
-maxMap = d3.map();
-
 maxAmountPerRegion= [
   {"region":"Total","max":220000},
   {"region":"Africa","max":8000},
@@ -57,11 +62,8 @@ for(let i = 0; i < colorsPerRegion.length; i++){
 for(let i = 0; i < maxAmountPerRegion.length; i++){
   maxMap.set(maxAmountPerRegion[i].region, maxAmountPerRegion[i].max);
 }
-
-
 // Zoom & Pan
 // --------------------------------------------------------------------------
-
 var svg = d3.select("#map-container")
  .append("svg")
  .attr('id', 'map')
@@ -81,9 +83,8 @@ buttons.on('change', function(d) {
   update();
 });
 
-// GRADIENT BUSINESS
+// GRADIENT LEGEND SETUP
 // --------------------------------------------------------------------------
-
 var maxValue = maxMap.get("Total");
 var somData = [0, maxValue];
 var colors = colorMap.get("Total")
@@ -114,197 +115,187 @@ defs.append("linearGradient")
 
 //Slider
 // --------------------------------------------------------------------------
-
 var dataTime = d3.range(0, 25).map(function(d) {
     return new Date(1995 + d, 10, 3);
+});
+
+var temp = currYear;
+var step = 1000 * 60 * 60 * 24 * 365;
+var sliderTime = 
+d3.sliderBottom()
+  .min(d3.min(dataTime))
+  .max(d3.max(dataTime))
+  .step(step)
+  .width(width+200)
+  .tickFormat(d3.timeFormat('%Y'))
+  .tickValues(dataTime)
+  .default(new Date(2004, 10, 3))
+  .on('onchange', val => {
+    currYear=(Math.floor(val/step))-25;
+    if(currYear != temp){
+      d3.select('p#value-time').text(d3.timeFormat('%Y')(val));
+      update(currYear);
+      bar(currentCountry);
+      temp = currYear;
+    }
   });
 
-  var temp = currYear;
-  var step = 1000 * 60 * 60 * 24 * 365;
-  var sliderTime = 
-  d3.sliderBottom()
-    .min(d3.min(dataTime))
-    .max(d3.max(dataTime))
-    .step(step)
-    .width(width+200)
-    .tickFormat(d3.timeFormat('%Y'))
-    .tickValues(dataTime)
-    .default(new Date(2004, 10, 3))
-    .on('onchange', val => {
-      currYear=(Math.floor(val/step))-25;
-      if(currYear != temp){
-        d3.select('p#value-time').text(d3.timeFormat('%Y')(val));
-        update(currYear);
-        bar(currentCountry);
-        temp = currYear;
-      }
-    });
+ var gTime = d3
+  .select('div#slider-time')
+  .append('svg')
+  .attr('width', 750)
+  .attr('height', 100)
+  .append('g')
+  .attr('transform', 'translate(30,30)');
 
-  var gTime = d3
-    .select('div#slider-time')
-    .append('svg')
-    .attr('width', 750)
-    .attr('height', 100)
-    .append('g')
-    .attr('transform', 'translate(30,30)');
+ gTime.call(sliderTime);
+d3.select('p#value-time').text(d3.timeFormat('%Y')(sliderTime.value()));
 
-  gTime.call(sliderTime);
-  d3.select('p#value-time').text(d3.timeFormat('%Y')(sliderTime.value()));
+ 
+//Legend
+// --------------------------------------------------------------------------
+drawLegend();
 
+function drawMap(error, topo) {
+  // Draw the map
+  svg.selectAll("g").remove();
+  d3.selectAll(".tooltip").remove();
   
-  //Barchart
-  // --------------------------------------------------------------------------
-  // set the dimensions and margins of the graph
-  var margin_bar = {top: 30, right: 30, bottom: 70, left: 60},
-  width_bar = 460 - margin.left - margin.right,
-  height_bar = 400 - margin.top - margin.bottom;
+  var tooltip = d3.select("body")
+    .append("div")
+    .attr("class","tooltip");
 
-  //Legend
-  // --------------------------------------------------------------------------
-  drawLegend();
+  d3.select(".tooltip").append("h4");
+  d3.select(".tooltip").append("p");
 
-  function ready(error, topo) {
-    // Draw the map
-    svg.selectAll("g").remove();
-    d3.selectAll(".tooltip").remove();
-    
-  
-    var tooltip = d3.select("body")
-      .append("div")
-      .attr("class","tooltip");
-  
-    d3.select(".tooltip").append("h4");
-    d3.select(".tooltip").append("p");
-  
-    svg.append("g")
-      .selectAll("path")
-      .data(topo.features)
-      .enter()
-      .append("path")
-      // draw each country
-      .attr("d", d3.geoPath()
-      .projection(projection))
-      .attr("id", function(d){return d.properties.name.toUpperCase();})
-      .attr("value", function(d){return d.properties.name.toUpperCase();})
-      // set the color of each country
-      .attr("fill", function (d) {
-          if(data.get(d.properties.name.toUpperCase())){
-            d.total = data.get(d.properties.name.toUpperCase())[currYear];
-            var color = d.total;
-            if(color == "" || color =="..") {return "white"};
-            return colorScale(colorInterpolate(color)); 
-          }else{
-            // Country is missing from data
-            return "white";
-          }
-        })
-        .on('mouseover', function (d, i) {
-          if(data.get(d.properties.name.toUpperCase())){
-            var arrivals = data.get(d.properties.name.toUpperCase())[currYear];
-            if(arrivals == "" || arrivals =="..") {arrivals =  "Missing data"} 
-            else{ arrivals = arrivals + " Arr."};
-          }
-          d3.select(this).transition()
-              .duration('50')
-               .attr('opacity', '0.6');
-               tooltip.select("h4").text(this.id);
-               tooltip.select("p").text(arrivals);
-               return tooltip.style("visibility", "visible");
-        })
-        .on('mouseout', function (d, i) {
-          d3.select(this).transition()
-               .duration('50')
-               .attr('opacity', '1');
-               return tooltip.style("visibility", "hidden");
-        }).on('click', selected)
-        .on("mousemove", function(){
-          return tooltip.style("top", (d3.event.pageY-10)+"px").style("left",(d3.event.pageX+10)+"px");
-        });
-        
-  }
-  
-  function update(){
-    if(selectedRegion == "Total"){
+  svg.append("g")
+    .selectAll("path")
+    .data(topo.features)
+    .enter()
+    .append("path")
+    // draw each country
+    .attr("d", d3.geoPath()
+    .projection(projection))
+    .attr("id", function(d){return d.properties.name.toUpperCase();})
+    .attr("value", function(d){return d.properties.name.toUpperCase();})
+    // set the color of each country
+    .attr("fill", function (d) {
+        if(data.get(d.properties.name.toUpperCase())){
+          d.total = data.get(d.properties.name.toUpperCase())[currYear];
+          var color = d.total;
+          if(color == "" || color =="..") {return "white"};
+          return colorScale(colorInterpolate(color)); 
+        }else{
+          // Country is missing from data
+          return "white";
+        }
+      })
+      .on('mouseover', function (d, i) {
+        if(data.get(d.properties.name.toUpperCase())){
+          var arrivals = data.get(d.properties.name.toUpperCase())[currYear];
+          if(arrivals == "" || arrivals =="..") {arrivals =  "Missing data"} 
+          else{ arrivals = arrivals + " Arr."};
+        }
+        d3.select(this).transition()
+            .duration('50')
+             .attr('opacity', '0.6');
+             tooltip.select("h4").text(this.id);
+             tooltip.select("p").text(arrivals);
+             return tooltip.style("visibility", "visible");
+      })
+      .on('mouseout', function (d, i) {
+        d3.select(this).transition()
+             .duration('50')
+             .attr('opacity', '1');
+             return tooltip.style("visibility", "hidden");
+      }).on('click', selected)
+      .on("mousemove", function(){
+        return tooltip.style("top", (d3.event.pageY-10)+"px").style("left",(d3.event.pageX+10)+"px");
+      });
+      
+}
+
+// Update the map with correct data
+// source for map https://github.com/johan/world.geo.json
+function update(){
+  if(selectedRegion == "Total"){
       d3.queue().defer(d3.json, "https://raw.githubusercontent.com/johan/world.geo.json/master/countries.geo.json")
       .defer(d3.csv,  "/DataParse/arrivals.csv", function(d) { 
         data.set(d.Country, [d.y1995,d.y1996,d.y1997,d.y1998,d.y1999,d.y2000,d.y2001,d.y2002,d.y2003,d.y2004,d.y2005,d.y2006,d.y2007,d.y2008,d.y2009,d.y2010,d.y2011,d.y2012,d.y2013,d.y2014,d.y2015,d.y2016,d.y2017,d.y2018,d.y2019]); 
       })
-      .await(ready);
-    }
-    else{
-      d3.queue().defer(d3.json, "https://raw.githubusercontent.com/johan/world.geo.json/master/countries.geo.json")
+      .await(drawMap);
+  }
+  else{
+    d3.queue().defer(d3.json, "https://raw.githubusercontent.com/johan/world.geo.json/master/countries.geo.json")
       .defer(d3.csv,  "/DataParse/Regions.csv", function(d) {
         if(selectedRegion == d.RegionOfOrigin){
           var years = [d.y1995,d.y1996,d.y1997,d.y1998,d.y1999,d.y2000,d.y2001,d.y2002,d.y2003,d.y2004,d.y2005,d.y2006,d.y2007,d.y2008,d.y2009,d.y2010,d.y2011,d.y2012,d.y2013,d.y2014,d.y2015,d.y2016,d.y2017,d.y2018,d.y2019]
           data.set(d.Country, years);
         }})
-        .await(ready)
-    }
+        .await(drawMap)
   }
-  
-  function selected() {
-    d3.select('.selected').classed('selected', false);
-    currentCountry=this.id;
-    bar(currentCountry);
-    d3.select(this).classed('selected', true);
-  }
-//Draw the bar and parse the data
- function bar(country){
+}
 
-  
-  
+// Apply changes on selected country
+function selected() {
+  d3.select('.selected').classed('selected', false);
+  currentCountry=this.id;
+  bar(currentCountry);
+  d3.select(this).classed('selected', true);
+}
+
+// Draw the bar and parse the data
+function bar(country){2
   // Parse the Data
-  d3.csv("/DataParse/Regions.csv", function(d) 
-  {
-    let found = 0;
-    for(let i=0; i < 1561 || found < 7;i++){
-      if(country == d[i].Country){
-        regionData.set(d[i].RegionOfOrigin, [d[i].y1995,d[i].y1996,d[i].y1997,d[i].y1998,d[i].y1999,d[i].y2000,d[i].y2001,d[i].y2002,d[i].y2003,d[i].y2004,d[i].y2005,d[i].y2006,d[i].y2007,d[i].y2008,d[i].y2009,d[i].y2010,d[i].y2011,d[i].y2012,d[i].y2013,d[i].y2014,d[i].y2015,d[i].y2016,d[i].y2017,d[i].y2018,d[i].y2019]);
-        found++;
-      }
+d3.csv("/DataParse/Regions.csv", function(d) 
+{
+  let found = 0;
+  for(let i=0; i < 1561 || found < 7;i++){
+    if(country == d[i].Country){
+      regionData.set(d[i].RegionOfOrigin, [d[i].y1995,d[i].y1996,d[i].y1997,d[i].y1998,d[i].y1999,d[i].y2000,d[i].y2001,d[i].y2002,d[i].y2003,d[i].y2004,d[i].y2005,d[i].y2006,d[i].y2007,d[i].y2008,d[i].y2009,d[i].y2010,d[i].y2011,d[i].y2012,d[i].y2013,d[i].y2014,d[i].y2015,d[i].y2016,d[i].y2017,d[i].y2018,d[i].y2019]);
+      found++;
     }
-    regionDataCurrent = [ 
-      parseFloat(regionData.get("Africa")[currYear]), 
-      parseFloat(regionData.get("Americas")[currYear]),
-      parseFloat(regionData.get("East Asia and the Pacific")[currYear]),
-      parseFloat(regionData.get("Europe")[currYear]),
-      parseFloat(regionData.get("Middle East")[currYear]),
-      parseFloat(regionData.get("South Asia")[currYear]),
-      parseFloat(regionData.get("Other not classified")[currYear])
-    ];
-    //Make all nan=0 for display
-    var counter = 0;
-    for (i=0; i<7; i++){
-      if (Number.isNaN(regionDataCurrent[i])){
-        regionDataCurrent[i]=0;
-        counter++  
-      }
-      if (counter == 7){
-  var ancm = "missing data";
-  } else var ancm = "";
+  }
+  regionDataCurrent = [ 
+    parseFloat(regionData.get("Africa")[currYear]), 
+    parseFloat(regionData.get("Americas")[currYear]),
+    parseFloat(regionData.get("East Asia and the Pacific")[currYear]),
+    parseFloat(regionData.get("Europe")[currYear]),
+    parseFloat(regionData.get("Middle East")[currYear]),
+    parseFloat(regionData.get("South Asia")[currYear]),
+    parseFloat(regionData.get("Other not classified")[currYear])
+  ];
+  //Make all nan=0 for display
+  var counter = 0;
+  for (i=0; i<7; i++){
+    if (Number.isNaN(regionDataCurrent[i])){
+      regionDataCurrent[i]=0;
+      counter++  
+    }
+    if (counter == 7){
+      var ancm = "missing data";
+    } else var ancm = "";
 
   svgA.selectAll("g").remove();
   svgA.selectAll("text").remove();
   svgA.selectAll("rect").remove();
 
-}
-
-var max = Math.max(...regionDataCurrent);
-
-const data1 = [
-  {region: 'Africa', value: regionDataCurrent[0]},
-  {region: 'Americas', value: regionDataCurrent[1]},
-  {region: 'East Asia and the Pacific', value: regionDataCurrent[2]},
-  {region: 'Europe', value: regionDataCurrent[3]},
-  {region: 'Middle East', value: regionDataCurrent[4]}, 
-  {region: 'South Asia', value: regionDataCurrent[5]},
-  {region: 'Other not classified', value: regionDataCurrent[6]}
-];
-svgA.append("text")
-.attr("text-anchor", "start")
-.attr("x", 0)
-.attr("y", -20)
-.text(country);
+  }
+  var max = Math.max(...regionDataCurrent);
+  const data1 = [
+    {region: 'Africa', value: regionDataCurrent[0]},
+    {region: 'Americas', value: regionDataCurrent[1]},
+    {region: 'East Asia and the Pacific', value: regionDataCurrent[2]},
+    {region: 'Europe', value: regionDataCurrent[3]},
+    {region: 'Middle East', value: regionDataCurrent[4]}, 
+    {region: 'South Asia', value: regionDataCurrent[5]},
+    {region: 'Other not classified', value: regionDataCurrent[6]}
+  ];
+  svgA.append("text")
+    .attr("text-anchor", "start")
+    .attr("x", 0)
+    .attr("y", -20)
+    .text(country);
 
   svgA.append("text")
     .attr("text-anchor", "end")
@@ -355,6 +346,8 @@ svgA.append("text")
     .attr("transform", "translate(" + x.bandwidth()/2 + ",-5)")
 })
 } 
+
+// Update Legend
 function updateGradientLegend()
 {
   defs.select(".linearGradient")
@@ -391,6 +384,7 @@ function updateGradientLegend()
   drawLegend();
 }
 
+// Draw Gradient Legend
 function drawLegend()
 {
   var height = 400;
@@ -411,9 +405,6 @@ function drawLegend()
   
   var svgB  = d3.select("#legend-container").append("svg").attr("width", width).attr("height", height).attr('id','map-legend');
   var g     = svgB.append("g").attr("transform", "translate(0," + padding + ")");
-  
-  
-
 
   g.append("rect")
     .attr("height", innerHeight)
@@ -423,5 +414,4 @@ function drawLegend()
   g.append("g")
     .call(yAxis)
     .select(".domain").remove()
-    
 }
