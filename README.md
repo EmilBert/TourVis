@@ -6,7 +6,7 @@ An Information Visualization made in the course TNM048-InfoVis of the flow of to
 
 * Open a server
 * Run index.html
-```
+
 ## Authors
 
 Contributors names
